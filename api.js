@@ -22,6 +22,7 @@
 						return item === 'true';
 					}
 
+				alert("test1 " + localStorage.getItem(name));
 					return item;
 				},
 				set: localStorage.setItem.bind(localStorage),
@@ -73,6 +74,14 @@
 	window.GitHubNotify.getApiUrl = () => {
 		const rootUrl = window.GitHubNotify.settings.get('rootUrl');
 
+
+alert("aaa " + window.GitHubNotify.settings.get('rootUrl'));
+
+alert("bbb " + window.GitHubNotify.settings.get('name'));
+
+alert("ccc " + window.GitHubNotify.settings.get('item'));
+
+
 		if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
 			return 'https://api.github.com/notifications';
        			//https://api.github.com/repos/benjaminkwhite/PR-Helper/pulls
@@ -106,7 +115,7 @@
 	window.gitHubNotifCount = () => {
 		const query = window.GitHubNotify.buildQuery({perPage: 1});
 		const url = `${window.GitHubNotify.getApiUrl()}?${query.join('&')}`;
-alert(url);
+alert("test2 " + url);
 		return window.GitHubNotify.request(url).then(response => {
 			const status = response.status;
 			const interval = Number(response.headers.get('X-Poll-Interval'));
