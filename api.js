@@ -86,7 +86,7 @@
 			rootUrl = 'https://github.com/';
 		}
 
-		const tabUrl = `${rootUrl}notifications`;
+		const tabUrl = `${rootUrl}pulls`;
 		if (window.GitHubNotify.settings.get('useParticipatingCount')) {
 			return `${tabUrl}/participating`;
 		}
