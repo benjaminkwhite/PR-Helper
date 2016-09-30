@@ -149,7 +149,7 @@
 			scheduleAlarm(period);
 			handleLastModified(lastModifed);
 
-			render(handleCount(count), [65, 131, 196, 255], 'Notifier for GitHub');
+			render(handleCount(count), [65, 131, 196, 255], 'GitHub PR Helper');
 		}).catch(handleError);
 	}
 
