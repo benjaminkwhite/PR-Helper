@@ -75,6 +75,7 @@
 
 		if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
 			return 'https://api.github.com/notifications';
+       			//https://api.github.com/repos/benjaminkwhite/PR-Helper/pulls
 		}
 		return `${rootUrl}api/v3/notifications`;
 	};
@@ -105,7 +106,7 @@
 	window.gitHubNotifCount = () => {
 		const query = window.GitHubNotify.buildQuery({perPage: 1});
 		const url = `${window.GitHubNotify.getApiUrl()}?${query.join('&')}`;
-
+alert(url);
 		return window.GitHubNotify.request(url).then(response => {
 			const status = response.status;
 			const interval = Number(response.headers.get('X-Poll-Interval'));
