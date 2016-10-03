@@ -1,0 +1,151 @@
+body {
+  background: white;
+  font: 400 14px Helvetica,Arial,sans-serif;
+  padding: 0;
+  margin: 0;
+  width: 400px;
+  min-height: 450px;
+}
+
+header {
+  background-color: #f3f3f3;
+  background-image: linear-gradient(#f9f9f9, #f3f3f3);
+  background-repeat: repeat-x;
+}
+
+header section {
+  padding: 10px;
+}
+
+h1 {
+  font-weight: 100;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  margin-left: 5px;
+}
+
+h1, img {
+  vertical-align: middle;
+}
+
+ul, li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: #3D7ADD;
+  outline: none;
+}
+
+.welcome, .empty, .add-repo {
+  padding: 0 10px;
+  display: none;
+}
+
+.add-repo {
+  display: none;
+  margin: 0;
+  background-color: rgba(255, 255, 171, 0.57);
+  width: 100%;
+  text-align: center;
+  padding: 3px;
+}
+
+.welcome p:first-child {
+  color: #3D7ADD;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#access-token, #github-host, #github-apihost {
+  width: 290px;
+}
+
+small {
+  color: #ccc;
+  font-size: 12px;
+}
+small a {
+}
+
+.version {
+  vertical-align: top;
+  display: inline-block;
+  font-size: 8px;
+  opacity: 0.6;
+}
+
+.pr {
+  margin-bottom: 6px;
+}
+
+.pr p {
+  padding: 0 0 3px 30px;
+  margin: 0;
+  color: #999;
+  font-size: 10px;
+}
+
+.pr .avatar {
+  float: left;
+  padding: 0;
+}
+
+.pr .avatar img {
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  margin-right: 10px;
+}
+
+.pr a {
+  color: #333;
+  text-decoration: none;
+}
+.pr .pr-link {
+  color: #444;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.pr .hide {
+  cursor: pointer;
+  display: none;
+}
+
+.pr:hover .hide {
+  display: inline;
+}
+
+#repositories {
+  list-style: none;
+  padding: 0 10px;
+}
+
+#repositories > li > p {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#repositories > li > p > .remove {
+  color: #ccc;
+  margin-left: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  display: none;
+}
+
+#repositories > li > p:hover > .remove {
+  display: inline;
+}
+
+#repositories > li > p > a {
+  text-decoration: none;
+  border-bottom: 1px solid #DADADA;
+  padding-bottom: 2px;
+}
+

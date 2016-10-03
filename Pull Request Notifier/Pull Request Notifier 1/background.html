@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="text/javascript" src="jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="underscore-min.js"></script>
+    <script type="text/javascript">
+
+var Fetcher, fetcher, interval;
+
+var str = JSON.stringify(["benjaminkwhite/PR-Helper"]);
+
+$.ajaxSetup({
+  crossDomain: true,
+  dataType: 'json'
+});
+
+Fetcher = (function() {
+  Fetcher.prototype.totalPR = 0;
+
+  Fetcher.prototype.accessToken = null;
+
+  Fetcher.prototype.repositories = [];
+
+  Fetcher.prototype.port = null;
+
+var msg;
+  function Fetcher() {
+    this.port = chrome.extension.connect({
+      name: 'connection'
+    });
+    chrome.extension.onConnect.addListener((function(_this) {
+      return function(port) {
+        return port.onMessage.addListener(function(msg) {
+          console.log(msg);
+          if (msg.refresh != null) {
+            return _this.fetch(port);
+          }
+        });
+      };
+    })(this));
+  }
+
+  Fetcher.prototype.fetch = function(port) {
+    var dfds;
+    if (port == null) {
+      port = null;
+    }
+    this.totalPR = 0;
+//  this.accessToken = 'localStorage.getItem('accessToken')';
+    this.accessToken = '3a5debb284e78fda33b986bec88184ed929eb84b ';
+    this.apihost = 'https://api.github.com';
+//  this.repositories = JSON.parse(localStorage.getItem('repositories'));
+
+
+    this.repositories = JSON.parse(str);
+    dfds = [];
+    _(this.repositories).each((function(_this) {
+      return function(repo) {
+        return dfds.push($.ajax({
+          type: 'get',
+          url: _this.apihost + ("/repos/" + repo + "/pulls?access_token=" + _this.accessToken),
+          success: function(data) {
+            return _this.store(repo, data);
+          },
+          error: function() {
+            debugger;
+          }
+        }));
+      };
+    })(this));
+    return $.when.apply($, dfds).done((function(_this) {
+      return function() {
+        var hiddenPRs, repos, totalPR;
+        repos = JSON.parse(str) || {};
+        hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+        totalPR = _(repos).reduce(function(prev, prs) {
+          var filtered;
+          filtered = _(prs).filter(function(pr) {
+            return !_(hiddenPRs).contains(pr.id);
+          });
+          return prev + filtered.length;
+        }, 0);
+        if (totalPR > 0) {
+          chrome.browserAction.setBadgeText({
+            text: "" + totalPR
+          });
+        } else {
+          chrome.browserAction.setBadgeText({
+            text: ''
+          });
+        }
+        if (port) {
+          return port.postMessage({
+            success: true
+          });
+        }
+      };
+    })(this));
+  };
+
+  Fetcher.prototype.store = function(repo, data) {
+    var repos;
+    repos = JSON.parse(localStorage.getItem('repos')) || {};
+    repos[repo] = data;
+    return localStorage.setItem('repos', JSON.stringify(repos));
+  };
+
+  return Fetcher;
+
+})();
+
+fetcher = new Fetcher;
+
+fetcher.fetch();
+
+interval = localStorage.getItem('refreshRate') || 600000;
+
+setInterval(function() {
+  return fetcher.fetch();
+}, interval);
+
+    </script>
+  </head>
+</html>

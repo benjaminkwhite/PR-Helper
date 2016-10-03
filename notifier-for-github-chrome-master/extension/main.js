@@ -141,9 +141,6 @@
 
 	function update() {
 		window.gitHubNotifCount().then(response => {
-
-//			alert("ccc " + response.count);
-
 			const count = response.count;
 			const interval = response.interval;
 			const lastModifed = response.lastModifed;
@@ -152,7 +149,7 @@
 			scheduleAlarm(period);
 			handleLastModified(lastModifed);
 
-			render(handleCount(count), [65, 131, 196, 255], 'GitHub PR Helper');
+			render(handleCount(count), [65, 131, 196, 255], 'Notifier for GitHub');
 		}).catch(handleError);
 	}
 

@@ -73,10 +73,8 @@
 	window.GitHubNotify.getApiUrl = () => {
 		const rootUrl = window.GitHubNotify.settings.get('rootUrl');
 
-
 		if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
 			return 'https://api.github.com/notifications';
-       			//https://api.github.com/repos/benjaminkwhite/PR-Helper/pulls
 		}
 		return `${rootUrl}api/v3/notifications`;
 	};
@@ -88,7 +86,6 @@
 			rootUrl = 'https://github.com/';
 		}
 
-//		const tabUrl = `${rootUrl}pulls`;
 		const tabUrl = `${rootUrl}notifications`;
 		if (window.GitHubNotify.settings.get('useParticipatingCount')) {
 			return `${tabUrl}/participating`;
@@ -108,7 +105,7 @@
 	window.gitHubNotifCount = () => {
 		const query = window.GitHubNotify.buildQuery({perPage: 1});
 		const url = `${window.GitHubNotify.getApiUrl()}?${query.join('&')}`;
-alert("aaa " + url);
+
 		return window.GitHubNotify.request(url).then(response => {
 			const status = response.status;
 			const interval = Number(response.headers.get('X-Poll-Interval'));
@@ -116,11 +113,8 @@ alert("aaa " + url);
 
 			const linkheader = response.headers.get('Link');
 
-
 			if (linkheader === null) {
 				return response.json().then(data => {
-					
-			alert(data.number);
 					return {count: data.length, interval, lastModifed};
 				});
 			}
@@ -137,9 +131,6 @@ alert("aaa " + url);
 			if (status >= 400) {
 				return Promise.reject(new Error(`client error: ${status} ${response.statusText}`));
 			}
-
-
-alert("bbb " + count);
 
 			return {count, interval, lastModifed};
 		});

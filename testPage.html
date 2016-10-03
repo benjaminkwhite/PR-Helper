@@ -1,0 +1,38 @@
+<html>
+<head>
+<script type="text/javascript">
+
+function getJSON() {
+
+  console.log('test');
+
+fetch('https://api.github.com/repos/benjaminkwhite/PR-Helper/pulls').then(function(response) {
+	
+
+  console.log(response.header);
+  var dataAll = JSON.parse(response.getContentText()); //
+  var data = dataAll.value.items;
+  console.log('test');
+  for (i in data){
+
+  console.log(data[i].url);
+  }
+
+
+
+}).catch(function(err) {
+	// Error :(
+});
+
+  }
+
+
+getJSON()
+
+</script>
+</head>
+
+<body>
+
+</body>
+</html>
