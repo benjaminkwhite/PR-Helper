@@ -97,6 +97,9 @@ var msg;
     var repos;
     repos = JSON.parse(localStorage.getItem('repos')) || {};
     repos[repo] = data;
+
+    //console.log(JSON.stringify(repos))
+    //console.log(JSON.stringify(data))
     return localStorage.setItem('repos', JSON.stringify(repos));
   };
 
@@ -108,7 +111,7 @@ fetcher = new Fetcher;
 
 fetcher.fetch();
 
-interval = localStorage.getItem('refreshRate') || 600000;
+interval = (localStorage.getItem('refreshRate') * 60000) || 300000;
 
 setInterval(function() {
   return fetcher.fetch();

@@ -14,11 +14,7 @@ GithubMon = (function() {
   GithubMon.prototype.hiddenPRs = [];
 
 
-//    alert('22222');
-
   function GithubMon(url) {
-
-//    alert('33333');
 
     this.removeRepository = bind(this.removeRepository, this);
     this.hidePR = bind(this.hidePR, this);
@@ -58,8 +54,6 @@ GithubMon = (function() {
   }
 
   GithubMon.prototype.renderVersion = function() {
-
-//    alert('44444');
 //    var manifest;
 //    manifest = chrome.runtime.getManifest();
 //    return $('.version').text(manifest.version);
@@ -73,25 +67,18 @@ GithubMon = (function() {
   };
 
   GithubMon.prototype.fetchRepositories = function() {
-//    alert('55555');
-//    alert(localStorage.getItem('repositories'));
     return this.repositories = JSON.parse(localStorage.getItem('repositories')) || [];
   };
 
   GithubMon.prototype.fetchPullRequests = function() {
-//    alert('66666');
     this.hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
     return this.repositoryJSON = JSON.parse(localStorage.getItem('repos'));
   };
 
   GithubMon.prototype.populateRepoList = function() {
     var html = "not yet";
-//    alert('77778');
     if (this.repositories.length > 0) {
       $('.empty').hide();
-
-console.log('7a');
-
 
 //        var hiddenPRs, repos, totalPR;
 //        repos = JSON.parse(localStorage.getItem('repos')) || {};
@@ -135,7 +122,6 @@ console.log('7a');
            });
          };
        })(this));
-console.log('7g');
       return $('#repositories').html(html.join(''));
     } else {
           alert('7e');
@@ -145,7 +131,6 @@ console.log('7g');
   };
 
   GithubMon.prototype.bindEvents = function() {
-//    alert('88888');
     $('.hide').on('click', this.hidePR);
     return $('.remove').on('click', this.removeRepository);
   };
@@ -172,12 +157,10 @@ console.log('7g');
   };
 
   GithubMon.prototype.hidePrompt = function() {
-//    alert('aaaaa');
     return $('.add-repo').hide();
   };
 
   GithubMon.prototype.addCurrentRepo = function() {
-    alert('bbbbb');
     this.repositories.push(this.currentRepo);
     localStorage.setItem('repositories', JSON.stringify(this.repositories));
     this.triggerFetch();
@@ -185,8 +168,6 @@ console.log('7g');
   };
 
   GithubMon.prototype.hidePR = function(event) {
-
-    alert('ccccc');
     var id;
     id = $(event.target).closest('li').data('id');
     this.hiddenPRs.push(id);
@@ -195,9 +176,6 @@ console.log('7g');
   };
 
   GithubMon.prototype.removeRepository = function(event) {
-
-    alert('ddddd');
-
     var repo;
     repo = $(event.target).closest('li').data('id');
     this.repositories = _(this.repositories).without(repo);
@@ -210,8 +188,6 @@ console.log('7g');
   };
 
   GithubMon.prototype.renderHelpView = function() {
-
-//    alert('eeee');
     $('.welcome').show();
     return $('.save-token').on('click', (function(_this) {
       return function() {
