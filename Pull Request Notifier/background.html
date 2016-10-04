@@ -94,10 +94,16 @@ var msg;
   };
 
   Fetcher.prototype.store = function(repo, data) {
-    var repos;
+    var repos, jsonText;
     repos = JSON.parse(localStorage.getItem('repos')) || {};
     repos[repo] = data;
-    return localStorage.setItem('repos', JSON.stringify(repos));
+
+
+
+
+    jsonText = JSON.stringify(repos);
+    console.log(jsonText);
+    return localStorage.setItem('repos', jsonText);
   };
 
   return Fetcher;
@@ -108,7 +114,9 @@ fetcher = new Fetcher;
 
 fetcher.fetch();
 
-interval = localStorage.getItem('refreshRate') || 600000;
+interval = (localStorage.getItem('refreshRate') * 60000) || 300000;
+
+//localStorage.clear();
 
 setInterval(function() {
   return fetcher.fetch();

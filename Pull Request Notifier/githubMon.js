@@ -1,7 +1,8 @@
 var GithubMon,
-  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  bind = function(fn, me) {
+    return function() {
+      return fn.apply(me, arguments); }; };
 
-//    alert('11111');
 GithubMon = (function() {
   GithubMon.prototype.repositoryTemplate = null;
 
@@ -14,12 +15,7 @@ GithubMon = (function() {
   GithubMon.prototype.hiddenPRs = [];
 
 
-//    alert('22222');
-
   function GithubMon(url) {
-
-//    alert('33333');
-
     this.removeRepository = bind(this.removeRepository, this);
     this.hidePR = bind(this.hidePR, this);
     this.addCurrentRepo = bind(this.addCurrentRepo, this);
@@ -32,18 +28,18 @@ GithubMon = (function() {
     };
     this.repositoryTemplate = $('#repository-row').html();
     this.pullRequestTemplate = $('#pull-request-row').html();
-//    this.port = chrome.extension.connect({
-//      name: 'connection'
-//    });
-//    this.port.onMessage.addListener((function(_this) {
-//      return function(msg) {
-//        if (msg.success) {
-//          return _this.render();
-//        } else {
-//          debugger;
-//        }
-//      };
-//    })(this));
+    //    this.port = chrome.extension.connect({
+    //      name: 'connection'
+    //    });
+    //    this.port.onMessage.addListener((function(_this) {
+    //      return function(msg) {
+    //        if (msg.success) {
+    //          return _this.render();
+    //        } else {
+    //          debugger;
+    //        }
+    //      };
+    //    })(this));
     this.renderVersion();
     this.accessToken = localStorage.getItem('accessToken');
     this.githubHost = localStorage.getItem('githubHost') ? localStorage.getItem('githubHost') : 'https://github.com';
@@ -58,11 +54,9 @@ GithubMon = (function() {
   }
 
   GithubMon.prototype.renderVersion = function() {
-
-//    alert('44444');
-//    var manifest;
-//    manifest = chrome.runtime.getManifest();
-//    return $('.version').text(manifest.version);
+    //    var manifest;
+    //    manifest = chrome.runtime.getManifest();
+    //    return $('.version').text(manifest.version);
   };
 
   GithubMon.prototype.render = function() {
@@ -73,79 +67,70 @@ GithubMon = (function() {
   };
 
   GithubMon.prototype.fetchRepositories = function() {
-//    alert('55555');
-//    alert(localStorage.getItem('repositories'));
     return this.repositories = JSON.parse(localStorage.getItem('repositories')) || [];
   };
 
   GithubMon.prototype.fetchPullRequests = function() {
-//    alert('66666');
     this.hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
     return this.repositoryJSON = JSON.parse(localStorage.getItem('repos'));
   };
 
   GithubMon.prototype.populateRepoList = function() {
     var html = "not yet";
-//    alert('77778');
     if (this.repositories.length > 0) {
       $('.empty').hide();
 
-console.log('7a');
-
-
-//        var hiddenPRs, repos, totalPR;
-//        repos = JSON.parse(localStorage.getItem('repos')) || {};
-//        hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
-//        totalPR = _(repos).reduce(function(prev, prs) {
-//          var filtered;
-//          filtered = _(prs).filter(function(pr) {
-//            return !_(hiddenPRs).contains(pr.id);
-//          });
-//          return filtered.length;
-//        }, 0);
-//        console.log(totalPR)
+      //        var hiddenPRs, repos, totalPR;
+      //        repos = JSON.parse(localStorage.getItem('repos')) || {};
+      //        hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+      //        totalPR = _(repos).reduce(function(prev, prs) {
+      //          var filtered;
+      //          filtered = _(prs).filter(function(pr) {
+      //            return !_(hiddenPRs).contains(pr.id);
+      //          });
+      //          return filtered.length;
+      //        }, 0);
+      //        console.log(totalPR)
 
       html = _(this.repositoryJSON).map((function(_this) {
-         return function(pullRequests, repo) {
-           var pullRequestsHTML;
-           pullRequests = _(pullRequests).filter(function(pr) {
-             return !_(_this.hiddenPRs).contains(pr.id);
-           });
+        return function(pullRequests, repo) {
+          var pullRequestsHTML;
+          pullRequests = _(pullRequests).filter(function(pr) {
+            return !_(_this.hiddenPRs).contains(pr.id);
+          });
 
-           if (pullRequests.length > 0) {
-             pullRequestsHTML = _(pullRequests).map(function(pr) {
-               return _.template(_this.pullRequestTemplate, {
-                 id: pr.id,
-                 title: pr.title,
-                 html_url: pr.html_url,
-                 user: pr.user.login,
-                 user_avatar: pr.user.avatar_url,
-                 user_url: pr.user.html_url,
-                 git_host: _this.githubHost,
-                 created_at: moment.utc(pr.created_at).fromNow()
-               });
-             });
-           } else {
-             pullRequestsHTML = ["<li><p>No PR's</p></li>"];
-           }
-           return _.template(_this.repositoryTemplate, {
-             name: repo,
-             git_host: _this.githubHost,
-             pullRequests: pullRequestsHTML.join('')
-           });
-         };
-       })(this));
-console.log('7g');
+          if (pullRequests.length > 0) {
+            pullRequestsHTML = _(pullRequests).map(function(pr) {
+              return _.template(_this.pullRequestTemplate, {
+                id: pr.id,
+                title: pr.title,
+                html_url: pr.html_url,
+                user: pr.user.login,
+                user_avatar: pr.user.avatar_url,
+                user_url: pr.user.html_url,
+                git_host: _this.githubHost,
+                created_at: moment.utc(pr.created_at).fromNow()
+              });
+            });
+          } else {
+            pullRequestsHTML = ["<li><p>No PR's</p></li>"];
+          }
+          return _.template(_this.repositoryTemplate, {
+            name: repo,
+            git_host: _this.githubHost,
+            pullRequests: pullRequestsHTML.join('')
+          });
+        };
+      })(this));
+
       return $('#repositories').html(html.join(''));
     } else {
-          alert('7e');
       $('#repositories').html('shit');
       return $('.empty').show();
     }
   };
 
   GithubMon.prototype.bindEvents = function() {
-//    alert('88888');
     $('.hide').on('click', this.hidePR);
     return $('.remove').on('click', this.removeRepository);
   };
@@ -165,19 +150,16 @@ console.log('7g');
   };
 
   GithubMon.prototype.showPrompt = function(repository) {
-    alert('99999');
     $('.add-repo .title').text(repository);
     $('.add-repo').show();
     return $('.add-repo .add').on('click', this.addCurrentRepo);
   };
 
   GithubMon.prototype.hidePrompt = function() {
-//    alert('aaaaa');
     return $('.add-repo').hide();
   };
 
   GithubMon.prototype.addCurrentRepo = function() {
-    alert('bbbbb');
     this.repositories.push(this.currentRepo);
     localStorage.setItem('repositories', JSON.stringify(this.repositories));
     this.triggerFetch();
@@ -185,8 +167,6 @@ console.log('7g');
   };
 
   GithubMon.prototype.hidePR = function(event) {
-
-    alert('ccccc');
     var id;
     id = $(event.target).closest('li').data('id');
     this.hiddenPRs.push(id);
@@ -195,9 +175,6 @@ console.log('7g');
   };
 
   GithubMon.prototype.removeRepository = function(event) {
-
-    alert('ddddd');
-
     var repo;
     repo = $(event.target).closest('li').data('id');
     this.repositories = _(this.repositories).without(repo);
@@ -210,8 +187,6 @@ console.log('7g');
   };
 
   GithubMon.prototype.renderHelpView = function() {
-
-//    alert('eeee');
     $('.welcome').show();
     return $('.save-token').on('click', (function(_this) {
       return function() {
@@ -232,9 +207,9 @@ console.log('7g');
   };
 
   GithubMon.prototype.triggerFetch = function() {
-//    return this.port.postMessage({
-//      refresh: true
-//    });
+    //    return this.port.postMessage({
+    //      refresh: true
+    //    });
   };
 
   return GithubMon;
@@ -242,6 +217,129 @@ console.log('7g');
 })();
 
 $(function() {
-     var mon;
-     return mon = new GithubMon('https://github.com/benjaminkwhite/PR-Helper');
+  var mon;
+  return mon = new GithubMon('https://github.com/benjaminkwhite/PR-Helper');
 });
+
+
+
+
+
+
+
+
+
+var Fetcher, fetcher, interval;
+
+$.ajaxSetup({
+  crossDomain: true,
+  dataType: 'json'
+});
+
+Fetcher = (function() {
+  Fetcher.prototype.totalPR = 0;
+
+  Fetcher.prototype.accessToken = null;
+
+  Fetcher.prototype.repositories = [];
+
+  Fetcher.prototype.port = null;
+
+  var msg;
+
+  function Fetcher() {
+    //    this.port = chrome.extension.connect({
+    //      name: 'connection'
+    //    });
+    //    chrome.extension.onConnect.addListener((function(_this) {
+    //      return function(port) {
+    //        return port.onMessage.addListener(function(msg) {
+    //          console.log(msg);
+    //          if (msg.refresh != null) {
+    //            return _this.fetch(port);
+    //          }
+    //        });
+    //      };
+    //    })(this));
+  }
+
+  Fetcher.prototype.fetch = function(port) {
+    var dfds;
+    if (port == null) {
+      port = null;
+    }
+    this.totalPR = 0;
+    this.accessToken = localStorage.getItem('accessToken');
+    this.apihost = 'https://api.github.com';
+    this.repositories = JSON.parse(localStorage.getItem('repositories'));
+
+    dfds = [];
+    _(this.repositories).each((function(_this) {
+      return function(repo) {
+        return dfds.push($.ajax({
+          type: 'get',
+          url: _this.apihost + ("/repos/" + repo + "/pulls?access_token=" + _this.accessToken),
+          success: function(data) {
+            return _this.store(repo, data);
+          },
+          error: function() {
+            debugger;
+          }
+        }));
+      };
+    })(this));
+    return $.when.apply($, dfds).done((function(_this) {
+      return function() {
+        var hiddenPRs, repos, totalPR;
+        repos = JSON.parse(localStorage.getItem('repos')) || {};
+        hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+        totalPR = _(repos).reduce(function(prev, prs) {
+          var filtered;
+          filtered = _(prs).filter(function(pr) {
+            return !_(hiddenPRs).contains(pr.id);
+          });
+          return prev + filtered.length;
+        }, 0);
+        if (totalPR > 0) {
+          //          chrome.browserAction.setBadgeText({
+          //            text: "" + totalPR
+          //          });
+        } else {
+          //          chrome.browserAction.setBadgeText({
+          //            text: ''
+          //          });
+        }
+        if (port) {
+          return port.postMessage({
+            success: true
+          });
+        }
+      };
+    })(this));
+  };
+
+  Fetcher.prototype.store = function(repo, data) {
+    var repos, jsonText;
+    repos = JSON.parse(localStorage.getItem('repos')) || {};
+    repos[repo] = data;
+
+    jsonText = JSON.stringify(repos);
+    //document.write(jsonText);
+    return localStorage.setItem('repos', jsonText);
+  };
+
+  return Fetcher;
+
+})();
+
+fetcher = new Fetcher;
+
+fetcher.fetch();
+
+interval = (localStorage.getItem('refreshRate') * 60000) || 300000;
+
+//localStorage.clear();
+
+setInterval(function() {
+  return fetcher.fetch();
+}, interval);
