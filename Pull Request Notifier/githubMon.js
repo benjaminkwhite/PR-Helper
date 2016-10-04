@@ -32,18 +32,18 @@ GithubMon = (function() {
     };
     this.repositoryTemplate = $('#repository-row').html();
     this.pullRequestTemplate = $('#pull-request-row').html();
-    this.port = chrome.extension.connect({
-      name: 'connection'
-    });
-    this.port.onMessage.addListener((function(_this) {
-      return function(msg) {
-        if (msg.success) {
-          return _this.render();
-        } else {
-          debugger;
-        }
-      };
-    })(this));
+//    this.port = chrome.extension.connect({
+//      name: 'connection'
+//    });
+//    this.port.onMessage.addListener((function(_this) {
+//      return function(msg) {
+//        if (msg.success) {
+//          return _this.render();
+//        } else {
+//          debugger;
+//        }
+//      };
+//    })(this));
     this.renderVersion();
     this.accessToken = localStorage.getItem('accessToken');
     this.githubHost = localStorage.getItem('githubHost') ? localStorage.getItem('githubHost') : 'https://github.com';
@@ -60,9 +60,9 @@ GithubMon = (function() {
   GithubMon.prototype.renderVersion = function() {
 
 //    alert('44444');
-    var manifest;
-    manifest = chrome.runtime.getManifest();
-    return $('.version').text(manifest.version);
+//    var manifest;
+//    manifest = chrome.runtime.getManifest();
+//    return $('.version').text(manifest.version);
   };
 
   GithubMon.prototype.render = function() {
@@ -86,59 +86,56 @@ GithubMon = (function() {
 
   GithubMon.prototype.populateRepoList = function() {
     var html = "not yet";
-    alert('77777');
+//    alert('77778');
     if (this.repositories.length > 0) {
       $('.empty').hide();
 
-    alert('7a');
+console.log('7a');
 
 
-        hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
-        
-          filtered = _(pullRequests).filter(function(pr) {
-            return !_(hiddenPRs).contains(pr.id);
-          });
+//        var hiddenPRs, repos, totalPR;
+//        repos = JSON.parse(localStorage.getItem('repos')) || {};
+//        hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+//        totalPR = _(repos).reduce(function(prev, prs) {
+//          var filtered;
+//          filtered = _(prs).filter(function(pr) {
+//            return !_(hiddenPRs).contains(pr.id);
+//          });
+//          return filtered.length;
+//        }, 0);
+//        console.log(totalPR)
 
-    alert(filtered);
+      html = _(this.repositoryJSON).map((function(_this) {
+         return function(pullRequests, repo) {
+           var pullRequestsHTML;
+           pullRequests = _(pullRequests).filter(function(pr) {
+             return !_(_this.hiddenPRs).contains(pr.id);
+           });
 
-var pullRequestsHTML;
-pullRequests = _(pullRequests).filter(function(pr) {
-});
-
-
-      // html = _(this.repositoryJSON).map((function(_this) {
-
-
-      //   return function(pullRequests, repo) {
-      //     var pullRequestsHTML;
-      //     pullRequests = _(pullRequests).filter(function(pr) {
-      //       return !_(_this.hiddenPRs).contains(pr.id);
-      //     });
-
-      //     if (pullRequests.length > 0) {
-      //       pullRequestsHTML = _(pullRequests).map(function(pr) {
-      //         return _.template(_this.pullRequestTemplate, {
-      //           id: pr.id,
-      //           title: pr.title,
-      //           html_url: pr.html_url,
-      //           user: pr.user.login,
-      //           user_avatar: pr.user.avatar_url,
-      //           user_url: pr.user.html_url,
-      //           git_host: _this.githubHost,
-      //           created_at: moment.utc(pr.created_at).fromNow()
-      //         });
-      //       });
-      //     } else {
-      //       pullRequestsHTML = ["<li><p>No PR's</p></li>"];
-      //     }
-      //     return _.template(_this.repositoryTemplate, {
-      //       name: repo,
-      //       git_host: _this.githubHost,
-      //       pullRequests: pullRequestsHTML.join('')
-      //     });
-      //   };
-      // })(this));
-          alert('7g');
+           if (pullRequests.length > 0) {
+             pullRequestsHTML = _(pullRequests).map(function(pr) {
+               return _.template(_this.pullRequestTemplate, {
+                 id: pr.id,
+                 title: pr.title,
+                 html_url: pr.html_url,
+                 user: pr.user.login,
+                 user_avatar: pr.user.avatar_url,
+                 user_url: pr.user.html_url,
+                 git_host: _this.githubHost,
+                 created_at: moment.utc(pr.created_at).fromNow()
+               });
+             });
+           } else {
+             pullRequestsHTML = ["<li><p>No PR's</p></li>"];
+           }
+           return _.template(_this.repositoryTemplate, {
+             name: repo,
+             git_host: _this.githubHost,
+             pullRequests: pullRequestsHTML.join('')
+           });
+         };
+       })(this));
+console.log('7g');
       return $('#repositories').html(html.join(''));
     } else {
           alert('7e');
@@ -235,9 +232,9 @@ pullRequests = _(pullRequests).filter(function(pr) {
   };
 
   GithubMon.prototype.triggerFetch = function() {
-    return this.port.postMessage({
-      refresh: true
-    });
+//    return this.port.postMessage({
+//      refresh: true
+//    });
   };
 
   return GithubMon;
@@ -245,8 +242,6 @@ pullRequests = _(pullRequests).filter(function(pr) {
 })();
 
 $(function() {
-   return chrome.tabs.getSelected(null, function(tab) {
      var mon;
-     return mon = new GithubMon(tab.url);
-   });
+     return mon = new GithubMon('https://github.com/benjaminkwhite/PR-Helper');
 });

@@ -23,19 +23,19 @@ Fetcher = (function() {
 
 var msg;
   function Fetcher() {
-    this.port = chrome.extension.connect({
-      name: 'connection'
-    });
-    chrome.extension.onConnect.addListener((function(_this) {
-      return function(port) {
-        return port.onMessage.addListener(function(msg) {
-          console.log(msg);
-          if (msg.refresh != null) {
-            return _this.fetch(port);
-          }
-        });
-      };
-    })(this));
+//    this.port = chrome.extension.connect({
+//      name: 'connection'
+//    });
+//    chrome.extension.onConnect.addListener((function(_this) {
+//      return function(port) {
+//        return port.onMessage.addListener(function(msg) {
+//          console.log(msg);
+//          if (msg.refresh != null) {
+//            return _this.fetch(port);
+//          }
+//        });
+//      };
+//    })(this));
   }
 
   Fetcher.prototype.fetch = function(port) {
@@ -44,7 +44,7 @@ var msg;
       port = null;
     }
     this.totalPR = 0;
-    this.accessToken = 'localStorage.getItem('accessToken')';
+    this.accessToken = localStorage.getItem('accessToken');
     this.apihost = 'https://api.github.com';
     this.repositories = JSON.parse(localStorage.getItem('repositories'));
 
@@ -76,13 +76,13 @@ var msg;
           return prev + filtered.length;
         }, 0);
         if (totalPR > 0) {
-          chrome.browserAction.setBadgeText({
-            text: "" + totalPR
-          });
+//          chrome.browserAction.setBadgeText({
+//            text: "" + totalPR
+//          });
         } else {
-          chrome.browserAction.setBadgeText({
-            text: ''
-          });
+//          chrome.browserAction.setBadgeText({
+//            text: ''
+//          });
         }
         if (port) {
           return port.postMessage({
