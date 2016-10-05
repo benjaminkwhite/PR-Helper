@@ -1,0 +1,9 @@
+diff a/Pull Request Notifier/githubMon.js b/Pull Request Notifier/githubMon.js	(rejected hunks)
+@@ -289,6 +289,7 @@
+       };
+     })(this));
+     return $.when.apply($, dfds).done((function(_this) {
++        var self = _this
+       return function() {
+         var hiddenPRs, repos, totalPR;
+         repos = JSON.parse(localStorage.getItem('repos')) || {};

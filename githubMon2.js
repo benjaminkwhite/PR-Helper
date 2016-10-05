@@ -103,25 +103,14 @@ GithubMon = (function() {
 
           if (pullRequests.length > 0) {
             pullRequestsHTML = _(pullRequests).map(function(pr) {
+id = pr.id
 
-issue_url = pr.issue_url
-number = pr.number
-
-console.log(number + "********" + number);
-commentsRequests = JSON.parse(localStorage.getItem('comments'));
-
-
-//          filtered = _(commentsRequests).filter(function(prc) {
-//            console.log(prc.body)
-//            console.log(_(prc.body).contains('#2'));
-//          });
-
-
-commentsHTML = _(filtered).map(function(pr) {
-//console.log(pr.body);
-});
+//commentsRequests = JSON.parse(localStorage.getItem('comments'));
+//commentsHTML = _(commentsRequests).map(function(pr) {
+//console.log(pr.title);
+//});
               return _.template(_this.pullRequestTemplate, {
-                id: pr.id,
+                id: id,
                 title: pr.title,
                 html_url: pr.html_url,
                 user: pr.user.login,
@@ -333,8 +322,11 @@ Fetcher = (function() {
 
 
             dfds2 = [];
-            var dfds2Comments = [];
 
+            var temp = [];
+            var test = [];
+
+var shit;
             _(commentsData).each((function(self) {
               return function(commentsData) {
                 return dfds2.push($.ajax({
@@ -342,9 +334,10 @@ Fetcher = (function() {
                   url: commentsData.url + "?access_token=" + _this.accessToken,
                   success: function(data) {
 
-                      dfds2Comments = dfds2Comments.concat(data);
-                      console.log(JSON.stringify(dfds2Comments))
-                      return localStorage.setItem('comments', JSON.stringify(dfds2Comments))
+
+ test = $.extend( test, data );
+
+                    return localStorage.setItem('comments', JSON.stringify(test))
                   },
                   error: function() {
                     debugger;
