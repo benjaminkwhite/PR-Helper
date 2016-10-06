@@ -70,7 +70,8 @@ GithubMon = (function() {
         return function(pullRequests, repo) {
           var pullRequestsHTML;
           pullRequests = _(pullRequests).filter(function(pr) {
-            return !_(_this.hiddenPRs).contains(pr.id);
+//            return !_(_this.hiddenPRs).contains(pr.id);
+            return _(['ivan-trofymenko','maryam-shoeybi','dimitri-nikoletsos','lin-chear']).contains(pr.user.login);
           });
 
           if (pullRequests.length > 0) {
