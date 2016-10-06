@@ -12,6 +12,12 @@ function save_options() {
   var refreshRate = document.querySelector("#refresh-rate");
   localStorage.setItem('refreshRate', refreshRate.value);
 
+  var teamMates = document.querySelector("#team-mates");
+  localStorage.setItem('teamMates', teamMates.value);
+
+  var hiddenPRs = document.querySelector("#hidden-PRs");
+  localStorage.setItem('hiddenPRs', hiddenPRs.value);
+
   // Update status to let user know options were saved.
   var status = document.querySelector(".status");
   status.innerHTML = "saved";
@@ -37,6 +43,16 @@ function restore_options() {
   var refreshRate = localStorage.getItem('refreshRate');
   var refreshRateField = document.querySelector("#refresh-rate");
   refreshRateField.value = refreshRate;
+
+  var teamMates = localStorage.getItem('teamMates');
+  var teamMatesField = document.querySelector("#team-mates");
+  teamMatesField.value = teamMates;
+
+  var hiddenPRs = localStorage.getItem('hiddenPRs');
+  var hiddenPRsField = document.querySelector("#hidden-PRs");
+  hiddenPRsField.value = hiddenPRs;
+
+
 }
 document.addEventListener('DOMContentLoaded', restore_options);
 document.querySelector('.save').addEventListener('click', save_options);

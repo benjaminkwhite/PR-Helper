@@ -5,16 +5,20 @@ var GithubMon,
     };
   };
 
+
 GithubMon = (function() {
   GithubMon.prototype.repositoryTemplate = null;
-
   GithubMon.prototype.pullRequestTemplate = null;
-
   GithubMon.prototype.repositoryJSON = null;
-
   GithubMon.prototype.repositories = [];
-
   GithubMon.prototype.hiddenPRs = [];
+
+
+  function badging(text, color, title) {
+    chrome.browserAction.setBadgeText({ text });
+    chrome.browserAction.setBadgeBackgroundColor({ color });
+    chrome.browserAction.setTitle({ title });
+  }
 
 
   function GithubMon(url) {
@@ -30,24 +34,10 @@ GithubMon = (function() {
     };
     this.repositoryTemplate = $('#repository-row').html();
     this.pullRequestTemplate = $('#pull-request-row').html();
-    //    this.port = chrome.extension.connect({
-    //      name: 'connection'
-    //    });
-    //    this.port.onMessage.addListener((function(_this) {
-    //      return function(msg) {
-    //        if (msg.success) {
-    //          return _this.render();
-    //        } else {
-    //          debugger;
-    //        }
-    //      };
-    //    })(this));
-    this.renderVersion();
     this.accessToken = localStorage.getItem('accessToken');
     this.githubHost = localStorage.getItem('githubHost') ? localStorage.getItem('githubHost') : 'https://github.com';
     if (this.accessToken) {
       this.render();
-      this.triggerFetch();
     } else {
       this.renderHelpView();
     }
@@ -55,11 +45,6 @@ GithubMon = (function() {
     this;
   }
 
-  GithubMon.prototype.renderVersion = function() {
-    //    var manifest;
-    //    manifest = chrome.runtime.getManifest();
-    //    return $('.version').text(manifest.version);
-  };
 
   GithubMon.prototype.render = function() {
     this.fetchRepositories();
@@ -81,19 +66,6 @@ GithubMon = (function() {
     var html = "not yet";
     if (this.repositories.length > 0) {
       $('.empty').hide();
-
-      //        var hiddenPRs, repos, totalPR;
-      //        repos = JSON.parse(localStorage.getItem('repos')) || {};
-      //        hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
-      //        totalPR = _(repos).reduce(function(prev, prs) {
-      //          var filtered;
-      //          filtered = _(prs).filter(function(pr) {
-      //            return !_(hiddenPRs).contains(pr.id);
-      //          });
-      //          return filtered.length;
-      //        }, 0);
-      //        console.log(totalPR)
-
       html = _(this.repositoryJSON).map((function(_this) {
         return function(pullRequests, repo) {
           var pullRequestsHTML;
@@ -102,26 +74,39 @@ GithubMon = (function() {
           });
 
           if (pullRequests.length > 0) {
+
+            pullLength = pullRequests.length
+            $('.version').text(pullLength);
+
+            switch (true) {
+              case (pullLength > 7):
+                text = '#ff0000';
+                break;
+              default:
+                text = '#3D7ADD';
+                break;
+            }
+
+            badging(pullLength.toString(), text, 'PR Helper');
             pullRequestsHTML = _(pullRequests).map(function(pr) {
 
-issue_url = pr.issue_url
+              issue_url = pr.issue_url
 
-console.log("********");
-commentsRequests = JSON.parse(localStorage.getItem('comments'));
+              commentsRequests = JSON.parse(localStorage.getItem('comments'));
 
-filtered = _(commentsRequests).filter(function(prc) {
-  return _([prc.issue_url]).contains(issue_url);
-});
+              filtered = _(commentsRequests).filter(function(prc) {
+                return _([prc.issue_url]).contains(issue_url);
+              });
 
-thumb = _(filtered).filter(function(prc) {
-fff = prc.body;
-  return fff.indexOf(":+1:") > -1;
-});
+              thumb = _(filtered).filter(function(prc) {
+                fff = prc.body;
+                return fff.indexOf(":+1:") > -1;
+              });
 
-check = _(filtered).filter(function(prc) {
-fff = prc.body;
-  return fff.indexOf(":white_check_mark:") > -1;
-});
+              check = _(filtered).filter(function(prc) {
+                fff = prc.body;
+                return fff.indexOf(":white_check_mark:") > -1;
+              });
 
               return _.template(_this.pullRequestTemplate, {
                 id: pr.id,
@@ -185,7 +170,6 @@ fff = prc.body;
   GithubMon.prototype.addCurrentRepo = function() {
     this.repositories.push(this.currentRepo);
     localStorage.setItem('repositories', JSON.stringify(this.repositories));
-    this.triggerFetch();
     return this.hidePrompt();
   };
 
@@ -206,7 +190,6 @@ fff = prc.body;
     delete this.repositoryJSON[repo];
     localStorage.setItem('repos', JSON.stringify(this.repositoryJSON));
     this.promptAddRepo();
-    return this.triggerFetch();
   };
 
   GithubMon.prototype.renderHelpView = function() {
@@ -223,16 +206,9 @@ fff = prc.body;
             localStorage.setItem('githubApiHost', gah);
           }
           $('.welcome').hide();
-          return _this.triggerFetch();
         }
       };
     })(this));
-  };
-
-  GithubMon.prototype.triggerFetch = function() {
-    //    return this.port.postMessage({
-    //      refresh: true
-    //    });
   };
 
   return GithubMon;
@@ -240,14 +216,13 @@ fff = prc.body;
 })();
 
 $(function() {
-  var mon;
-  return mon = new GithubMon('https://github.com/benjaminkwhite/PR-Helper');
+  return chrome.tabs.getSelected(null, function(tab) {
+    var mon;
+    return mon = new GithubMon(tab.url);
+  }); //  var mon;
+  //  return mon = new GithubMon('https://github.corp.achievers.com/BE/PFA/pulls');
+
 });
-
-
-
-
-
 
 
 
@@ -270,21 +245,7 @@ Fetcher = (function() {
 
   var msg;
 
-  function Fetcher() {
-    //    this.port = chrome.extension.connect({
-    //      name: 'connection'
-    //    });
-    //    chrome.extension.onConnect.addListener((function(_this) {
-    //      return function(port) {
-    //        return port.onMessage.addListener(function(msg) {
-    //          console.log(msg);
-    //          if (msg.refresh != null) {
-    //            return _this.fetch(port);
-    //          }
-    //        });
-    //      };
-    //    })(this));
-  }
+  function Fetcher() {}
 
   Fetcher.prototype.fetch = function(port) {
     var dfds, dfds2;
@@ -293,7 +254,7 @@ Fetcher = (function() {
     }
     this.totalPR = 0;
     this.accessToken = localStorage.getItem('accessToken');
-    this.apihost = 'https://api.github.com';
+    this.apihost = localStorage.getItem('githubApiHost') ? localStorage.getItem('githubApiHost') : 'https://api.github.com';
     this.repositories = JSON.parse(localStorage.getItem('repositories'));
 
     dfds = [];
@@ -346,9 +307,8 @@ Fetcher = (function() {
                   url: commentsData.url + "?access_token=" + _this.accessToken,
                   success: function(data) {
 
-                      dfds2Comments = dfds2Comments.concat(data);
-                      //console.log(JSON.stringify(dfds2Comments))
-                      return localStorage.setItem('comments', JSON.stringify(dfds2Comments))
+                    dfds2Comments = dfds2Comments.concat(data);
+                    return localStorage.setItem('comments', JSON.stringify(dfds2Comments))
                   },
                   error: function() {
                     debugger;
@@ -357,13 +317,7 @@ Fetcher = (function() {
               };
             })(this));
           }, 0);
-          //          chrome.browserAction.setBadgeText({
-          //            text: "" + totalPR
-          //          });
-        } else {
-          //          chrome.browserAction.setBadgeText({
-          //            text: ''
-          //          });
+
         }
         if (port) {
           return port.postMessage({
@@ -398,4 +352,3 @@ interval = (localStorage.getItem('refreshRate') * 60000) || 300000;
 setInterval(function() {
   return fetcher.fetch();
 }, interval);
-
