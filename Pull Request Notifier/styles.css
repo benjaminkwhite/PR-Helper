@@ -149,3 +149,10 @@ small a {
   padding-bottom: 2px;
 }
 
+.thumb, .check{
+  display: none;
+}
+
+.thumb1-1, .thumb1-2, .thumb2-2, .check-1{
+  display: inline-block;
+}

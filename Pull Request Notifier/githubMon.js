@@ -105,21 +105,24 @@ GithubMon = (function() {
             pullRequestsHTML = _(pullRequests).map(function(pr) {
 
 issue_url = pr.issue_url
-number = pr.number
 
-console.log(number + "********" + number);
+console.log("********");
 commentsRequests = JSON.parse(localStorage.getItem('comments'));
 
-
-//          filtered = _(commentsRequests).filter(function(prc) {
-//            console.log(prc.body)
-//            console.log(_(prc.body).contains('#2'));
-//          });
-
-
-commentsHTML = _(filtered).map(function(pr) {
-//console.log(pr.body);
+filtered = _(commentsRequests).filter(function(prc) {
+  return _([prc.issue_url]).contains(issue_url);
 });
+
+thumb = _(filtered).filter(function(prc) {
+fff = prc.body;
+  return fff.indexOf(":+1:") > -1;
+});
+
+check = _(filtered).filter(function(prc) {
+fff = prc.body;
+  return fff.indexOf(":white_check_mark:") > -1;
+});
+
               return _.template(_this.pullRequestTemplate, {
                 id: pr.id,
                 title: pr.title,
@@ -128,6 +131,8 @@ commentsHTML = _(filtered).map(function(pr) {
                 user_avatar: pr.user.avatar_url,
                 user_url: pr.user.html_url,
                 git_host: _this.githubHost,
+                thumb: thumb.length,
+                check: check.length,
                 created_at: moment.utc(pr.created_at).fromNow()
               });
             });
@@ -144,7 +149,6 @@ commentsHTML = _(filtered).map(function(pr) {
 
       return $('#repositories').html(html.join(''));
     } else {
-      $('#repositories').html('shit');
       return $('.empty').show();
     }
   };
@@ -343,7 +347,7 @@ Fetcher = (function() {
                   success: function(data) {
 
                       dfds2Comments = dfds2Comments.concat(data);
-                      console.log(JSON.stringify(dfds2Comments))
+                      //console.log(JSON.stringify(dfds2Comments))
                       return localStorage.setItem('comments', JSON.stringify(dfds2Comments))
                   },
                   error: function() {

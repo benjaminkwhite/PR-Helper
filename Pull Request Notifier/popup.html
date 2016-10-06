@@ -2,21 +2,28 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="styles.css" />
-    <script type="text/html" id="repository-row">
+    <template type="text/html" id="repository-row">
     <li data-id="{{name}}">
         <p>
           <a href="{{git_host}}/{{name}}" target="_blank">{{name}}</a><span class="remove">x</span>
         </p>
         <ul class="prs">{{pullRequests}}</ul>
       </li>
-    </script>
-    <script type="text/html" id="pull-request-row">
+    </template>
+    <template type="text/html" id="pull-request-row">
       <li class="pr" data-id="{{id}}">
         <p class="avatar"><a href="{{user_url}}" target="_blank"><img src="{{user_avatar}}"/></a></p>
         <p><a href="{{html_url}}" target="_blank" class="pr-link">{{title}}</a></p>
+
+{{thumb}}<br> 
+{{check}}<br>
+
+<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" class="thumb thumb1-{{thumb}}" />
+<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" class="thumb thumb2-{{thumb}}" />
+<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" class="check check-{{check}}" />
         <p>{{created_at}} <span class="hide">hide</span></p>
       </li>
-    </script>
+    </template>
     <script src="jquery-2.0.3.min.js"></script>
     <script src="underscore-min.js"></script>
     <script src="moment.min.js"></script>
