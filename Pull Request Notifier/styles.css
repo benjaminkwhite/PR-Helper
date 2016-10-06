@@ -153,6 +153,6 @@ small a {
   display: none;
 }
 
-.thumb1-1, .thumb1-2, .thumb2-2, .check-1{
+.thumb:not(.thumb1-0):not(.thumb2-0):not(.thumb2-1), .check:not(.check-0) {
   display: inline-block;
 }
