@@ -17,13 +17,6 @@ function save_options() {
 
   var hiddenPRs = document.querySelector("#hidden-PRs");
   localStorage.setItem('hiddenPRs', hiddenPRs.value);
-
-  // Update status to let user know options were saved.
-  var status = document.querySelector(".status");
-  status.innerHTML = "saved";
-  setTimeout(function() {
-    status.innerHTML = "";
-  }, 750);
 }
 
 // Restores select box state to saved value from localStorage.
@@ -51,8 +44,7 @@ function restore_options() {
   var hiddenPRs = localStorage.getItem('hiddenPRs');
   var hiddenPRsField = document.querySelector("#hidden-PRs");
   hiddenPRsField.value = hiddenPRs;
-
-
 }
+
 document.addEventListener('DOMContentLoaded', restore_options);
 document.querySelector('.save').addEventListener('click', save_options);

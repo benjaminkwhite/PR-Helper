@@ -1,52 +1,69 @@
+<!doctype html>
 <html>
-<head>
-  <title>Showtime!</title>
-  <style>
-    body {
-      background-color: #00aced;
-      color: #fff;
-      font-family: Helvetica Neue, Helvetica;
-    }
-    small {
-      opacity: 0.7;
-    }
-  </style>
-</head>
-
-<body>
-  <section>
-    <h1>Pull Request Monitor</h1>
-    <small>Yeah baby!</small>
-    <p>
+  <head>
+    <meta charset="utf-8">
+    <title>PR Helper</title>
+    <style>
+      section {
+        -webkit-padding-start: 18px;
+      }
+      section h3 {
+        -webkit-margin-start: -18px;
+      }
+      input[type='text'] {
+        width: 350px;
+      }
+      span.description {
+        font-style: italic;
+        color: grey;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h3>Custom URL</h3>
       <label for="github-host">Github Host</label>
-      <input type="text" name="github-host" id="github-host" placeholder="https://github.com" />
-    </p>
-    <p>
-      <label for="github-host">Github Api Host</label>
-      <input type="text" name="github-apihost" id="github-apihost" placeholder="https://api.github.com" />
-    </p>
-    <p>
-      <label for="access-token">Personal access token</label>
-      <input type="text" name="access-token" id="access-token"/>
-    </p>
-    <p>
+      <input type="text" id="github-host" autofocus placeholder="https://github.com">
+      <span class="description" style="display: none;">Specify the root URL to your GitHub Enterprise</span>
+    </section>
+    <section>
+      <h3></h3>
+      <label for="github-apihost">Github Api Host</label>
+      <input type="text" id="github-apihost" placeholder="https://api.github.com">
+      <span class="description" style="display: none;">Specify the root URL to your GitHub Enterprise</span>
+    </section>
+    <section>
+      <h3>API access</h3>
+      <label for="access-token">Token</label>
+      <input type="text" id="access-token">
+      <span class="description"><a id="gh_link" href="https://github.com/settings/tokens/new?scopes=notifications&description=Notifier for GitHub Chrome extension" target="gh_target">Create a token</a> with the <strong>notifications</strong> permissions.</span><br />
+      <span class="description" style="display: none;">If you want notifications for private repositories, you'll need to <a id="gh_link" href="https://github.com/settings/tokens/new?scopes=notifications,repo&description=Notifier for GitHub Chrome extension" target="gh_target">create a token</a> with the <strong>notifications</strong> and <strong>repo</strong> permissions.</span>
+    </section>
+    <section>
+      <h3>Other</h3>
       <label for="refresh-rate">Refresh rate (mins)</label>
-      <input type="text" name="refresh-rate" id="refresh-rate" placeholder="10"/>
-    </p>
-    <p>
+      <input type="text" id="refresh-rate" placeholder="10"/>
+    </section>
+    <section>
+      <h3></h3>
       <label for="team-mates">Teammates</label>
-      <input type="text" name="team-mates" id="team-mates" placeholder=""/>
-    </p>
-    <p>
+      <input type="text" id="team-mates" placeholder=""/>
+    </section>
+    <section>
+      <h3></h3>
       <label for="hidden-PRs">hiddenPRs</label>
-      <input type="text" name="hidden-PRs" id="hidden-PRs" placeholder=""/>
-    </p>
-
-
-
+      <input type="text" id="hidden-PRs" placeholder=""/>
+    </section>
+    <section>
+      <h3>Desktop Notifications</h3>
+      <input type="checkbox" id="show_desktop_notif">
+      <label for="show_desktop_notif">Show desktop notifications</label>
+    </section>
+    <section>
+   <h3>
     <button class="save">Save</button>
-    <p class="status"></p>
-  </section>
-</body>
-<script src="options.js"></script>
+    </h3>
+    </section>
+    <script src="options.js"></script>
+  </body>
 </html>
