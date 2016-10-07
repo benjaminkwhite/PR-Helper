@@ -5,7 +5,6 @@ var GithubMon,
     };
   };
 
-
 GithubMon = (function() {
   GithubMon.prototype.repositoryTemplate = null;
   GithubMon.prototype.pullRequestTemplate = null;
@@ -13,13 +12,11 @@ GithubMon = (function() {
   GithubMon.prototype.repositories = [];
   GithubMon.prototype.hiddenPRs = [];
 
-
   function badging(text, color, title) {
     chrome.browserAction.setBadgeText({ text });
     chrome.browserAction.setBadgeBackgroundColor({ color });
     chrome.browserAction.setTitle({ title });
   }
-
 
   function GithubMon(url) {
     this.removeRepository = bind(this.removeRepository, this);
@@ -45,7 +42,6 @@ GithubMon = (function() {
     this;
   }
 
-
   GithubMon.prototype.render = function() {
     this.fetchRepositories();
     this.fetchPullRequests();
@@ -59,28 +55,29 @@ GithubMon = (function() {
 
   GithubMon.prototype.fetchPullRequests = function() {
     this.hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+    this.teamMates = localStorage.getItem('teamMates');
     return this.repositoryJSON = JSON.parse(localStorage.getItem('repos'));
   };
 
   GithubMon.prototype.populateRepoList = function() {
     var html = "";
-
-var teamMates = localStorage.getItem('teamMates');
-var teamMates = teamMates.split(",");
-
     if (this.repositories.length > 0) {
       $('.empty').hide();
       html = _(this.repositoryJSON).map((function(_this) {
         return function(pullRequests, repo) {
           var pullRequestsHTML;
-          
+
           pullRequests = _(pullRequests).filter(function(pr) {
             return !_(_this.hiddenPRs).contains(pr.id);
           });
 
-          pullRequests = _(pullRequests).filter(function(pr) {
-            return _(teamMates).contains(pr.user.login);
-          });
+          if (_this.teamMates.length > 0) {
+            teamMates = _this.teamMates.split(",");
+
+            pullRequests = _(pullRequests).filter(function(pr) {
+              return _(teamMates).contains(pr.user.login);
+            });
+          };
 
           if (pullRequests.length > 0) {
 
@@ -234,8 +231,6 @@ $(function() {
 });
 
 
-
-
 var Fetcher, fetcher, interval;
 
 $.ajaxSetup({
@@ -245,16 +240,13 @@ $.ajaxSetup({
 
 Fetcher = (function() {
   Fetcher.prototype.totalPR = 0;
-
   Fetcher.prototype.accessToken = null;
-
   Fetcher.prototype.repositories = [];
-
   Fetcher.prototype.port = null;
 
-  var msg;
-
-  function Fetcher() {}
+  function Fetcher() {
+    
+  }
 
   Fetcher.prototype.fetch = function(port) {
     var dfds, dfds2;
@@ -302,9 +294,7 @@ Fetcher = (function() {
                 id: pr.id,
                 url: pr.comments_url
               };
-
             });
-
 
             dfds2 = [];
             var dfds2Comments = [];
@@ -351,12 +341,8 @@ Fetcher = (function() {
 })();
 
 fetcher = new Fetcher;
-
 fetcher.fetch();
-
 interval = (localStorage.getItem('refreshRate') * 60000) || 300000;
-
-//localStorage.clear();
 
 setInterval(function() {
   return fetcher.fetch();

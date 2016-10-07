@@ -4,7 +4,6 @@
    "description": "Keep track of the Pull Requests of your favorite repositories \u003C3",
    "homepage_url": "https://github.com/sindresorhus/notifier-for-github-chrome",
    "manifest_version": 2,   
-   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtXMTMnK1+iylOcfIDqV2fmdrP+1Wae8vLlUtPof5Gyi7YUgk1JS5cKXNNLAr2oqKH1HC7nTIdV6qRpax7KOijgDlHMhtHfi3gswdtviNejTSfkceIgXGBkwErGsIeXg8n5oscSshTCiDjAlbhPqu/EWEF+L0/SByF8/Ji+HYqp07rf3s+d5HgIk19NMAZNPd0RE1qiGz1IFIG7R4daPq1AnXZ9tTEy7wTPNU6tULnmM67VcVHHFcx8bPxVaGDW9k519pU6+cPL4ABv0XIMY61QuAp82jJVsMg9xWRhmQ0X26+FaywjJidm4jFqgOxwRawx/BEvgAOUU1R2jNJ2dsSwIDAQAB",
    "update_url": "https://clients2.google.com/service/update2/crx",
    "icons": {
       "128": "github-120.png",
@@ -32,6 +31,7 @@
       "default_popup": "popup.html",
       "default_title": "PR Helper"
    },
+   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
    "options_ui": {
       "page": "options.html",
       "chrome_style": true
