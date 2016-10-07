@@ -63,15 +63,23 @@ GithubMon = (function() {
   };
 
   GithubMon.prototype.populateRepoList = function() {
-    var html = "not yet";
+    var html = "";
+
+var teamMates = localStorage.getItem('teamMates');
+var teamMates = teamMates.split(",");
+
     if (this.repositories.length > 0) {
       $('.empty').hide();
       html = _(this.repositoryJSON).map((function(_this) {
         return function(pullRequests, repo) {
           var pullRequestsHTML;
+          
           pullRequests = _(pullRequests).filter(function(pr) {
-//            return !_(_this.hiddenPRs).contains(pr.id);
-            return _(['ivan-trofymenko','maryam-shoeybi','dimitri-nikoletsos','lin-chear']).contains(pr.user.login);
+            return !_(_this.hiddenPRs).contains(pr.id);
+          });
+
+          pullRequests = _(pullRequests).filter(function(pr) {
+            return _(teamMates).contains(pr.user.login);
           });
 
           if (pullRequests.length > 0) {
