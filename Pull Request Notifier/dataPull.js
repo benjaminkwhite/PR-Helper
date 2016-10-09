@@ -12,7 +12,12 @@ Fetcher = (function() {
   Fetcher.prototype.port = null;
 
   function Fetcher() {
-    
+    chrome.extension.onMessage.addListener(
+      function(request, sendResponse) {
+        console.log(request.greeting);
+        sendResponse({farewell: "goodbye"});
+      }
+    );
   }
 
   Fetcher.prototype.fetch = function(port) {
@@ -44,8 +49,15 @@ Fetcher = (function() {
       var self = _this
       return function() {
         var hiddenPRs, repos, totalPR;
-        repos = JSON.parse(localStorage.getItem('repos')) || {};
-        hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+        repos = localStorage.getItem('repos') || {};
+if (repos.length > 0) {
+repos = JSON.parse(repos);
+};
+    
+        hiddenPRs = localStorage.getItem('hiddenPRs') || [];
+if (hiddenPRs.length > 0) {
+hiddenPRs = JSON.parse(hiddenPRs);
+};
         totalPR = _(repos).reduce(function(prev, prs) {
           var filtered;
           filtered = _(prs).filter(function(pr) {
