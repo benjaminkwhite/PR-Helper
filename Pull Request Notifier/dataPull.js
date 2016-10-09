@@ -1,6 +1,3 @@
-
-
-
 var Fetcher, fetcher, interval;
 
 $.ajaxSetup({

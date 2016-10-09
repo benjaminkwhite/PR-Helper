@@ -6,14 +6,17 @@
             loc = window.location.href;
             var youtube2mp3path ='http://youtubeconverter.me/?youtubeURL='+encodeURIComponent(loc)+'&quality=320&submit=OK'; 
             var div_embed = document.getElementById('user-links');
+            var vcard_username = document.getElementsByClassName('vcard-username')[0].innerHTML
+
+
+console.log('go go go')
+localStorage.setItem('teamMates', vcard_username);
 
             if (div_embed) {
-           console.log('go go go')
                 button_embed = '<li class="header-nav-item"><button type="button" class="btn btn-block">Add as PR friend</button></li>';
                 div_embed.innerHTML = button_embed+div_embed.innerHTML;
             }
         }
-           console.log(loc)
         
         if (/^https?\:\/\/github\.com\/.*/.test(loc)) {
            console.log('go go go')

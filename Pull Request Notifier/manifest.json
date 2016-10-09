@@ -5,7 +5,7 @@
       "48": "github-120.png"
    },
    "content_scripts": [ {
-      "js": [ "youtubeconverter.js" ],
+      "js": [ "addButton.js" ],
       "matches": [ "http://*.github.com/*",  "https://*.github.com/*", "http://github.com/*",  "https://github.com/*"],
       "run_at": "document_end"
    } ],
@@ -21,7 +21,7 @@
       "scripts": [
          "jquery-2.0.3.min.js",
          "underscore-min.js",
-         "background.js"
+         "dataPull.js"
       ]
    },
    "browser_action": {
