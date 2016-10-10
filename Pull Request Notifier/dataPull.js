@@ -12,10 +12,24 @@ Fetcher = (function() {
   Fetcher.prototype.port = null;
 
   function Fetcher() {
-    chrome.extension.onMessage.addListener(
-      function(request, sendResponse) {
-        console.log(request.greeting);
-        sendResponse({farewell: "goodbye"});
+    chrome.runtime.onMessage.addListener(
+      function(request, sender, sendResponse) {
+
+        message = request.message
+        message = message.split(",");
+
+        if (message[0] === "who"){ 
+          teamMates = localStorage.getItem('teamMates') || {};
+          teamMates = teamMates.split(",");
+
+          found = _(teamMates).contains(message[1]);
+          sendResponse({farewell: found});
+
+console.log(message[1]); 
+console.log(teamMates); 
+console.log(found); 
+          
+        }
       }
     );
   }
@@ -50,14 +64,14 @@ Fetcher = (function() {
       return function() {
         var hiddenPRs, repos, totalPR;
         repos = localStorage.getItem('repos') || {};
-if (repos.length > 0) {
-repos = JSON.parse(repos);
-};
-    
+        if (repos.length > 0) {
+          repos = JSON.parse(repos);
+        };
+
         hiddenPRs = localStorage.getItem('hiddenPRs') || [];
-if (hiddenPRs.length > 0) {
-hiddenPRs = JSON.parse(hiddenPRs);
-};
+        if (hiddenPRs.length > 0) {
+          hiddenPRs = JSON.parse(hiddenPRs);
+        };
         totalPR = _(repos).reduce(function(prev, prs) {
           var filtered;
           filtered = _(prs).filter(function(pr) {
