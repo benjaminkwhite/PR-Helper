@@ -46,6 +46,39 @@ Fetcher = (function() {
           };
         }
 
+        if (message[0] === "setMe") {
+          localStorage.setItem('me', message[1]);
+          sendResponse({ lookup: 'done' });
+        }
+
+        if (message[0] === "setTeamMates") {
+          teamMates = localStorage.getItem('teamMates') || {};
+
+          if (teamMates.length > 0) {
+            teamMates = [teamMates];
+            teamMates.push(message[1]);
+          } else {
+            teamMates = message[1]
+          };
+
+          localStorage.setItem('teamMates', teamMates);
+
+          sendResponse({ lookup: 'done' });
+        }
+
+        if (message[0] === "removeTeamMates") {
+          teamMates = localStorage.getItem('teamMates') || {};
+          teamMates = teamMates.split(",");
+
+          var filtered;
+          filtered = _(teamMates).filter(function(pr) {
+            return !_([message[1]]).contains(pr);
+
+          });
+          localStorage.setItem('teamMates', filtered);
+          sendResponse({ lookup: 'done' });
+        }
+
         if (message[0] === "refresh") {
           this.fetch;
           sendResponse({ lookup: 'ok' });
