@@ -18,21 +18,27 @@ Fetcher = (function() {
         message = request.message
         message = message.split(",");
 
-        if (message[0] === "who"){ 
+        if (message[0] === "who") {
           teamMates = localStorage.getItem('teamMates') || {};
-          teamMates = teamMates.split(",");
-
-          found = _(teamMates).contains(message[1]);
-          sendResponse({farewell: found});
+          if (teamMates > 0) {
+            teamMates = teamMates.split(",");
+            found = _(teamMates).contains(message[1]);
+            sendResponse({ lookup: found });
+          } else {
+            sendResponse({ lookup: 'none' });
+          };
         }
 
-        if (message[0] === "isMe"){ 
+        if (message[0] === "isMe") {
           me = localStorage.getItem('me') || {};
-          me = me.split(",");
-
-          found = _(me).contains(message[1]);
-          sendResponse({farewell: found});
-        } 
+          if (me > 0) {
+            me = me.split(",");
+            found = _(me).contains(message[1]);
+            sendResponse({ lookup: found });
+          } else {
+            sendResponse({ lookup: 'none' });
+          };
+        }
 
       }
     );

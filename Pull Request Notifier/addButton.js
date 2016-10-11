@@ -32,18 +32,18 @@
                 var prRemove = document.getElementById("prRemove");
                 var prAdd = document.getElementById("prAdd");
 
-                if (request[0] === "isMe" && response.farewell === false){ 
+                if (request[0] === "isMe" && response.lookup === false){ 
                     prStart.classList.add("table-list-triage");
                 }
-                else if (request[0] === "isMe" && response.farewell == true){ 
+                else if (request[0] === "isMe" && response.lookup == true){ 
                     prRemove.style.display = "none";
                     prAdd.style.display = "none";
                 }
 
-                if (request[0] === "who" && response.farewell == false){ 
+                if (request[0] === "who" && response.lookup == false){ 
                     prRemove.style.display = "none";
                 }
-                else if (request[0] === "who" && response.farewell == true){ 
+                else if (request[0] === "who" && response.lookup == true){ 
                     prAdd.style.display = "none";
                 }
             });
