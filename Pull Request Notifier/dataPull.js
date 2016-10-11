@@ -24,12 +24,16 @@ Fetcher = (function() {
 
           found = _(teamMates).contains(message[1]);
           sendResponse({farewell: found});
-
-console.log(message[1]); 
-console.log(teamMates); 
-console.log(found); 
-          
         }
+
+        if (message[0] === "isMe"){ 
+          me = localStorage.getItem('me') || {};
+          me = me.split(",");
+
+          found = _(me).contains(message[1]);
+          sendResponse({farewell: found});
+        } 
+
       }
     );
   }

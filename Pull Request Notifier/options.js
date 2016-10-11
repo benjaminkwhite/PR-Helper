@@ -15,6 +15,9 @@ function save_options() {
   var teamMates = document.querySelector("#team-mates");
   localStorage.setItem('teamMates', teamMates.value);
 
+  var me = document.querySelector("#me");
+  localStorage.setItem('me', me.value);
+
   // var hiddenPRs = document.querySelector("#hidden-PRs");
   // localStorage.setItem('hiddenPRs', hiddenPRs.value);
 }
@@ -47,6 +50,10 @@ function restore_options() {
   var teamMates = localStorage.getItem('teamMates');
   var teamMatesField = document.querySelector("#team-mates");
   teamMatesField.value = teamMates;
+
+  var me = localStorage.getItem('me');
+  var meField = document.querySelector("#me");
+  meField.value = me;
 
   // var hiddenPRs = localStorage.getItem('hiddenPRs');
   // var hiddenPRsField = document.querySelector("#hidden-PRs");
