@@ -20,7 +20,7 @@ Fetcher = (function() {
 
         if (message[0] === "who") {
           teamMates = localStorage.getItem('teamMates') || {};
-          if (teamMates > 0) {
+          if (teamMates.length > 0) {
             teamMates = teamMates.split(",");
             found = _(teamMates).contains(message[1]);
             sendResponse({ lookup: found });
@@ -31,7 +31,7 @@ Fetcher = (function() {
 
         if (message[0] === "isMe") {
           me = localStorage.getItem('me') || {};
-          if (me > 0) {
+          if (me.length > 0) {
             me = me.split(",");
             found = _(me).contains(message[1]);
             sendResponse({ lookup: found });

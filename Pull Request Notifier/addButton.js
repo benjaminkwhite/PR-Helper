@@ -31,7 +31,7 @@
                 var prStart = document.getElementById("prStart");
                 var prRemove = document.getElementById("prRemove");
                 var prAdd = document.getElementById("prAdd");
-
+console.log(response.lookup)
                 if (request[0] === "isMe" && response.lookup === false){ 
                     prStart.classList.add("table-list-triage");
                 }
