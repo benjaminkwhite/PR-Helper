@@ -12,12 +12,17 @@ Fetcher = (function() {
   Fetcher.prototype.port = null;
 
   function Fetcher() {
-    console.log('tester');
+
     chrome.runtime.onMessage.addListener(
       function(request, sender, sendResponse) {
 
         message = request.message
         message = message.split(",");
+
+        if (message[0] === "getUrl") {
+          url = localStorage.getItem('githubHost') || {};
+          sendResponse({ lookup: url });
+        }
 
         if (message[0] === "who") {
           teamMates = localStorage.getItem('teamMates') || {};
@@ -41,11 +46,17 @@ Fetcher = (function() {
           };
         }
 
+        if (message[0] === "refresh") {
+          this.fetch;
+          sendResponse({ lookup: 'ok' });
+        }
+
       }
     );
   }
 
   Fetcher.prototype.fetch = function(port) {
+    console.log('fetch');
     var dfds, dfds2;
     if (port == null) {
       port = null;
@@ -140,16 +151,15 @@ Fetcher = (function() {
     return localStorage.setItem('repos', jsonText);
   };
 
-  console.log('Fetcher');
 
   return Fetcher;
 })();
 
 fetcher = new Fetcher;
 fetcher.fetch();
+
 interval = 10000;
 
-  console.log(interval);
 setInterval(function() {
   return fetcher.fetch();
 }, interval);
