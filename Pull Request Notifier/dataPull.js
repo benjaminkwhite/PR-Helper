@@ -12,6 +12,7 @@ Fetcher = (function() {
   Fetcher.prototype.port = null;
 
   function Fetcher() {
+    console.log('tester');
     chrome.runtime.onMessage.addListener(
       function(request, sender, sendResponse) {
 
@@ -139,14 +140,16 @@ Fetcher = (function() {
     return localStorage.setItem('repos', jsonText);
   };
 
-  return Fetcher;
+  console.log('Fetcher');
 
+  return Fetcher;
 })();
 
 fetcher = new Fetcher;
 fetcher.fetch();
-interval = (localStorage.getItem('refreshRate') * 60000) || 300000;
+interval = 10000;
 
+  console.log(interval);
 setInterval(function() {
   return fetcher.fetch();
 }, interval);
