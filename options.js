@@ -1,72 +1,77 @@
 (() => {
-	'use strict';
+  'use strict';
 
-	document.addEventListener('DOMContentLoaded', () => {
-		const formRootUrl = document.getElementById('root_url');
-		const formOauthToken = document.getElementById('oauth_token');
-		const ghSettingsUrl = document.getElementById('gh_link');
-		const showDesktopNotif = document.getElementById('show_desktop_notif');
+  document.addEventListener('DOMContentLoaded', () => {
+    const githubHostField = document.getElementById('github-host');
+    const githubApiHostField = document.getElementById('github-apihost');
+    const accessTokenField = document.getElementById('access-token');
+    const refreshRateField = document.getElementById('refresh-rate');
+    const teamMatesField = document.getElementById('team-mates');
+    const meField = document.getElementById('me');
+//    const hiddenPRsField = document.getElementById('hiddenPRs');
+    const gh_linkField = document.querySelector("#gh_link");
 
-		function loadSettings() {
-			formRootUrl.value = GitHubNotify.settings.get('rootUrl');
-			formOauthToken.value = GitHubNotify.settings.get('oauthToken');
-			showDesktopNotif.checked = GitHubNotify.settings.get('showDesktopNotif');
-		}
+    const showDesktopNotif = document.getElementById('show_desktop_notif');
 
-		loadSettings();
+    function loadSettings() {
+      githubHostField.value = localStorage.getItem('githubHost');
+      gh_linkField.href = localStorage.getItem('githubHost') + "/settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension"
+      githubApiHostField.value = localStorage.getItem('githubApiHost');
+      accessTokenField.value = localStorage.getItem('accessToken');
+      refreshRateField.value = localStorage.getItem('refreshRate');
+      teamMatesField.value = localStorage.getItem('teamMates');
+      meField.value = localStorage.getItem('me');
+//      hiddenPRsField.value = localStorage.getItem('hiddenPRs');
+      showDesktopNotif.checked = localStorage.getItem('showDesktopNotif');
+    }
 
-		function updateBadge() {
-			chrome.runtime.sendMessage('update');
-		}
+    loadSettings();
 
-		function normalizeRoot(url) {
-			if (!/^https?:\/\//.test(url)) {
-				// assume it is https
-				url = `https://${url}`;
-			}
+    githubHostField.addEventListener('change', () => {
 
-			if (!/\/$/.test(url)) {
-				url += '/';
-			}
+      if (githubHostField.value === "") {
+        localStorage.setItem('githubHost', 'https://github.com');
+      } else {
+        localStorage.setItem('githubHost', githubHostField.value);
+      }
+    });
 
-			return url;
-		}
+    githubApiHostField.addEventListener('change', () => {
+      localStorage.setItem('githubApiHost', githubApiHostField.value);
+    });
 
-		formRootUrl.addEventListener('change', () => {
-			let url = normalizeRoot(formRootUrl.value);
+    accessTokenField.addEventListener('change', () => {
+      localStorage.setItem('accessToken', accessTokenField.value);
+    });
 
-			const urlSettings = `${normalizeRoot(formRootUrl.value)}settings/tokens/new?scopes=notifications`;
+    refreshRateField.addEventListener('change', () => {
+      localStorage.setItem('refreshRate', refreshRateField.value);
+    });
 
-			// case of url is empty: set to default
-			if (url === normalizeRoot('')) {
-				GitHubNotify.settings.remove('rootUrl');
-				url = GitHubNotify.settings.get('rootUrl');
-			}
+    teamMatesField.addEventListener('change', () => {
+      localStorage.setItem('teamMates', teamMatesField.value);
+    });
 
-			GitHubNotify.settings.set('rootUrl', url);
-			ghSettingsUrl.href = urlSettings;
-			updateBadge();
-			loadSettings();
-		});
+    meField.addEventListener('change', () => {
+      localStorage.setItem('me', meField.value);
+    });
 
-		formOauthToken.addEventListener('change', () => {
-			GitHubNotify.settings.set('oauthToken', formOauthToken.value);
-			updateBadge();
-		});
+    // hiddenPRsField.addEventListener('change', () => {
+    //   localStorage.setItem('hidden-PRs', hiddenPRsField.value);
+    // });
 
-		showDesktopNotif.addEventListener('change', () => {
-			if (showDesktopNotif.checked) {
-				window.GitHubNotify.requestPermission('notifications').then(granted => {
-					if (granted) {
-						updateBadge();
-					} else {
-						showDesktopNotif.checked = false;
-					}
-					GitHubNotify.settings.set('showDesktopNotif', granted);
-				});
-			} else {
-				GitHubNotify.settings.set('showDesktopNotif', showDesktopNotif.checked);
-			}
-		});
-	});
+    showDesktopNotif.addEventListener('change', () => {
+      if (showDesktopNotif.checked) {
+        window.GitHubNotify.requestPermission('notifications').then(granted => {
+          if (granted) {
+          } else {
+            showDesktopNotif.checked = false;
+          }
+          localStorage.setItem('showDesktopNotif', granted);
+        });
+      } else {
+        localStorage.setItem('showDesktopNotif', showDesktopNotif.checked);
+      }
+    });
+  });
 })();

@@ -1,44 +1,68 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>GitHub PR Helper</title>
-		<style>
-			section {
-				-webkit-padding-start: 18px;
-			}
-			section h3 {
-				-webkit-margin-start: -18px;
-			}
-			input[type='text'] {
-				width: 350px;
-			}
-			span.description {
-				font-style: italic;
-				color: grey;
-			}
-		</style>
-		<script src="api.js"></script>
-		<script src="options.js"></script>
-	</head>
-	<body>
-		<section>
-			<h3>Custom URL</h3>
-			<label for="root_url">Root URL</label>
-			<input type="text" id="root_url" autofocus placeholder="e.g. https://github.yourco.com/">
-			<span class="description">Specify the root URL to your GitHub Enterprise</span>
-		</section>
-		<section>
-			<h3>API access</h3>
-			<label for="oauth_token">Token</label>
-			<input type="text" id="oauth_token">
-			<span class="description">For public repositories, <a id="gh_link" href="https://github.com/settings/tokens/new?scopes=notifications&description=Notifier for GitHub Chrome extension" target="gh_target">create a token</a> with the <strong>notifications</strong> permission and specify it.</span><br />
-			<span class="description">If you want notifications for private repositories, you'll need to <a id="gh_link" href="https://github.com/settings/tokens/new?scopes=notifications,repo&description=Notifier for GitHub Chrome extension" target="gh_target">create a token</a> with the <strong>notifications</strong> and <strong>repo</strong> permissions.</span>
-		</section>
-		<section>
- 			<h3>Desktop Notifications</h3>
- 			<input type="checkbox" id="show_desktop_notif">
- 			<label for="show_desktop_notif">Show desktop notifications</label>
- 		</section>
-	</body>
+  <head>
+    <meta charset="utf-8">
+    <title>PR Helper</title>
+    <style>
+      section {
+        -webkit-padding-start: 18px;
+      }
+      section h3 {
+        -webkit-margin-start: -18px;
+      }
+      input[type='text'] {
+        width: 350px;
+      }
+      span.description {
+        font-style: italic;
+        color: grey;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h3>Custom URL</h3>
+      <label for="github-host">Github Host</label>
+      <input type="text" id="github-host" autofocus placeholder="https://github.com">
+      <span class="description" style="display: none;">Specify the root URL to your GitHub Enterprise</span>
+    </section>
+    <section>
+      <h3></h3>
+      <label for="github-apihost">Github Api Host</label>
+      <input type="text" id="github-apihost" placeholder="https://api.github.com">
+      <span class="description" style="display: none;">Specify the root URL to your GitHub Enterprise</span>
+    </section>
+    <section>
+      <h3>API access</h3>
+      <label for="access-token">Token</label>
+      <input type="text" id="access-token">
+      <span class="description"><a id="gh_link" href="https://github.com/settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension" target="gh_target">Create a token</a> with the <strong>notifications</strong> permissions.</span>
+    </section>
+    <section>
+      <h3>Other</h3>
+      <label for="refresh-rate">Refresh rate (mins)</label>
+      <input type="text" id="refresh-rate" placeholder="5"/>
+    </section>
+    <section>
+      <h3></h3>
+      <label for="me">Me</label>
+      <input type="text" id="me" placeholder=""/>
+    </section>
+    <section>
+      <h3></h3>
+      <label for="team-mates">Teammates</label>
+      <input type="text" id="team-mates" placeholder=""/>
+    </section>
+<!--     <section>
+      <h3></h3>
+      <label for="hidden-PRs">hiddenPRs</label>
+      <input type="text" id="hidden-PRs" placeholder=""/>
+    </section> -->
+    <section>
+      <h3>Desktop Notifications</h3>
+      <input type="checkbox" id="show_desktop_notif">
+      <label for="show_desktop_notif">Show desktop notifications</label>
+    </section>
+    <script src="options.js"></script>
+  </body>
 </html>
