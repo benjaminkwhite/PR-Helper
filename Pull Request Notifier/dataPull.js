@@ -11,6 +11,17 @@ Fetcher = (function() {
   Fetcher.prototype.repositories = [];
   Fetcher.prototype.port = null;
 
+
+
+
+  function badging(text, color, title) {
+    chrome.browserAction.setBadgeText({ text });
+    chrome.browserAction.setBadgeBackgroundColor({ color });
+    chrome.browserAction.setTitle({ title });
+  }
+
+
+
   function Fetcher() {
 
     chrome.runtime.onMessage.addListener(
@@ -127,6 +138,7 @@ Fetcher = (function() {
         if (hiddenPRs.length > 0) {
           hiddenPRs = JSON.parse(hiddenPRs);
         };
+        
         totalPR = _(repos).reduce(function(prev, prs) {
           var filtered;
           filtered = _(prs).filter(function(pr) {
@@ -134,7 +146,17 @@ Fetcher = (function() {
           });
           return prev + filtered.length;
         }, 0);
+
         if (totalPR > 0) {
+
+          color = '#3D7ADD';
+
+          if (totalPR > 7) {
+            color = '#ff0000';
+          }
+
+          badging(totalPR.toString(), color, 'PR Helper');
+
           comments = _(repos).reduce(function(prev, prs) {
 
             commentsData = _(prs).map(function(pr) {

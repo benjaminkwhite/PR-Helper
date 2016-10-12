@@ -1,64 +1,77 @@
-// Saves options to localStorage.
-function save_options() {
-  var githubHostField = document.querySelector("#github-host");
-  localStorage.setItem('githubHost', githubHostField.value);
+(() => {
+  'use strict';
 
-  var githubApiHostField = document.querySelector("#github-apihost");
-  localStorage.setItem('githubApiHost', githubApiHostField.value);
+  document.addEventListener('DOMContentLoaded', () => {
+    const githubHostField = document.getElementById('github-host');
+    const githubApiHostField = document.getElementById('github-apihost');
+    const accessTokenField = document.getElementById('access-token');
+    const refreshRateField = document.getElementById('refresh-rate');
+    const teamMatesField = document.getElementById('team-mates');
+    const meField = document.getElementById('me');
+//    const hiddenPRsField = document.getElementById('hiddenPRs');
+    const gh_linkField = document.querySelector("#gh_link");
 
-  var accessTokenField = document.querySelector("#access-token");
-  localStorage.setItem('accessToken', accessTokenField.value);
+    const showDesktopNotif = document.getElementById('show_desktop_notif');
 
-  var refreshRate = document.querySelector("#refresh-rate");
-  localStorage.setItem('refreshRate', refreshRate.value);
+    function loadSettings() {
+      githubHostField.value = localStorage.getItem('githubHost');
+      gh_linkField.href = localStorage.getItem('githubHost') + "/settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension"
+      githubApiHostField.value = localStorage.getItem('githubApiHost');
+      accessTokenField.value = localStorage.getItem('accessToken');
+      refreshRateField.value = localStorage.getItem('refreshRate');
+      teamMatesField.value = localStorage.getItem('teamMates');
+      meField.value = localStorage.getItem('me');
+//      hiddenPRsField.value = localStorage.getItem('hiddenPRs');
+      showDesktopNotif.checked = localStorage.getItem('showDesktopNotif');
+    }
 
-  var teamMates = document.querySelector("#team-mates");
-  localStorage.setItem('teamMates', teamMates.value);
+    loadSettings();
 
-  var me = document.querySelector("#me");
-  localStorage.setItem('me', me.value);
+    githubHostField.addEventListener('change', () => {
 
-  // var hiddenPRs = document.querySelector("#hidden-PRs");
-  // localStorage.setItem('hiddenPRs', hiddenPRs.value);
-}
+      if (githubHostField.value === "") {
+        localStorage.setItem('githubHost', 'https://github.com');
+      } else {
+        localStorage.setItem('githubHost', githubHostField.value);
+      }
+    });
 
-// Restores select box state to saved value from localStorage.
-function restore_options() {
-  var githubHost = localStorage.getItem('githubHost');
-  var githubHostField = document.querySelector("#github-host");
-  githubHostField.value = githubHost;
+    githubApiHostField.addEventListener('change', () => {
+      localStorage.setItem('githubApiHost', githubApiHostField.value);
+    });
 
+    accessTokenField.addEventListener('change', () => {
+      localStorage.setItem('accessToken', accessTokenField.value);
+    });
 
-  var gh_linkField = document.querySelector("#gh_link");
-  if (githubHost === "") {
-    githubHost = "https://github.com";
-  }
-  gh_linkField.href = githubHost + "/settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension"
+    refreshRateField.addEventListener('change', () => {
+      localStorage.setItem('refreshRate', refreshRateField.value);
+    });
 
-  var githubApiHost = localStorage.getItem('githubApiHost');
-  var githubApiHostField = document.querySelector("#github-apihost");
-  githubApiHostField.value = githubApiHost;
+    teamMatesField.addEventListener('change', () => {
+      localStorage.setItem('teamMates', teamMatesField.value);
+    });
 
-  var accessToken = localStorage.getItem('accessToken');
-  var accessTokenField = document.querySelector("#access-token");
-  accessTokenField.value = accessToken;
+    meField.addEventListener('change', () => {
+      localStorage.setItem('me', meField.value);
+    });
 
-  var refreshRate = localStorage.getItem('refreshRate');
-  var refreshRateField = document.querySelector("#refresh-rate");
-  refreshRateField.value = refreshRate;
+    // hiddenPRsField.addEventListener('change', () => {
+    //   localStorage.setItem('hidden-PRs', hiddenPRsField.value);
+    // });
 
-  var teamMates = localStorage.getItem('teamMates');
-  var teamMatesField = document.querySelector("#team-mates");
-  teamMatesField.value = teamMates;
-
-  var me = localStorage.getItem('me');
-  var meField = document.querySelector("#me");
-  meField.value = me;
-
-  // var hiddenPRs = localStorage.getItem('hiddenPRs');
-  // var hiddenPRsField = document.querySelector("#hidden-PRs");
-  // hiddenPRsField.value = hiddenPRs;
-}
-
-document.addEventListener('DOMContentLoaded', restore_options);
-document.querySelector('.save').addEventListener('click', save_options);
+    showDesktopNotif.addEventListener('change', () => {
+      if (showDesktopNotif.checked) {
+        window.GitHubNotify.requestPermission('notifications').then(granted => {
+          if (granted) {
+          } else {
+            showDesktopNotif.checked = false;
+          }
+          localStorage.setItem('showDesktopNotif', granted);
+        });
+      } else {
+        localStorage.setItem('showDesktopNotif', showDesktopNotif.checked);
+      }
+    });
+  });
+})();

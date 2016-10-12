@@ -12,11 +12,6 @@ GithubMon = (function() {
   GithubMon.prototype.repositories = [];
   GithubMon.prototype.hiddenPRs = [];
 
-  function badging(text, color, title) {
-    chrome.browserAction.setBadgeText({ text });
-    chrome.browserAction.setBadgeBackgroundColor({ color });
-    chrome.browserAction.setTitle({ title });
-  }
 
   function GithubMon(url) {
     this.removeRepository = bind(this.removeRepository, this);
@@ -44,8 +39,7 @@ GithubMon = (function() {
 
   GithubMon.prototype.render = function() {
 
-    chrome.extension.sendMessage({ message: 'refresh' }, function(response) {
-    });
+    chrome.extension.sendMessage({ message: 'refresh' }, function(response) {});
 
 
     this.fetchRepositories();
@@ -89,16 +83,6 @@ GithubMon = (function() {
             pullLength = pullRequests.length
             $('.version').text(pullLength);
 
-            switch (true) {
-              case (pullLength > 7):
-                text = '#ff0000';
-                break;
-              default:
-                text = '#3D7ADD';
-                break;
-            }
-
-            badging(pullLength.toString(), text, 'PR Helper');
             pullRequestsHTML = _(pullRequests).map(function(pr) {
 
               issue_url = pr.issue_url
