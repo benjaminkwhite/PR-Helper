@@ -42,10 +42,10 @@ Fetcher = (function() {
         }
 
         if (message[0] === "isMe") {
-          me = localStorage.getItem('me') || {};
-          if (me.length > 0) {
-            me = me.split(",");
-            found = _(me).contains(message[1]);
+          myId = localStorage.getItem('myId') || {};
+          if (myId.length > 0) {
+            myId = myId.split(",");
+            found = _(myId).contains(message[1]);
             sendResponse({ lookup: found });
           } else {
             sendResponse({ lookup: 'none' });
@@ -53,7 +53,7 @@ Fetcher = (function() {
         }
 
         if (message[0] === "setMe") {
-          localStorage.setItem('me', message[1]);
+          localStorage.setItem('myId', message[1]);
           sendResponse({ lookup: 'done' });
         }
 
@@ -141,13 +141,13 @@ Fetcher = (function() {
           });
 
           teamMates = localStorage.getItem('teamMates') || {};
-          me = localStorage.getItem('me') || {};
+          myId = localStorage.getItem('myId') || {};
 
           if (teamMates.length > 0) {
 
-            me = me.split(",");
+            myId = myId.split(",");
             teamMates = teamMates.split(",");
-            list = teamMates.concat(me);
+            list = teamMates.concat(myId);
 
             filtered = _(filtered).filter(function(pr) {
               return _(list).contains(pr.user.login);

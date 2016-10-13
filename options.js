@@ -25,7 +25,7 @@
       accessTokenField.value = localStorage.getItem('accessToken');
       refreshRateField.value = localStorage.getItem('refreshRate');
 //      teamMatesField.value = localStorage.getItem('teamMates');
-//      meField.value = localStorage.getItem('me');
+//      meField.value = localStorage.getItem('myId');
 //      hiddenPRsField.value = localStorage.getItem('hiddenPRs');
       showDesktopNotif.checked = localStorage.getItem('showDesktopNotif');
     }
@@ -42,6 +42,13 @@
 
     githubHostField.addEventListener('change', () => {
         localStorage.setItem('githubHost', stringClean(githubHostField.value));
+
+      var githubHost = stringClean(githubHostField.value);
+        if (githubHost === "") {
+          githubHost = "https://github.com";
+        }
+      gh_linkField.href = githubHost + "/settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension"
+
     });
 
     githubApiHostField.addEventListener('change', () => {
@@ -61,7 +68,7 @@
     // });
 
     // meField.addEventListener('change', () => {
-    //   localStorage.setItem('me', meField.value);
+    //   localStorage.setItem('myId', meField.value);
     // });
 
     // hiddenPRsField.addEventListener('change', () => {

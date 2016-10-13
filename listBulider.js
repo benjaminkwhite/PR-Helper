@@ -11,6 +11,8 @@ GithubMon = (function() {
   GithubMon.prototype.repositoryJSON = null;
   GithubMon.prototype.repositories = [];
   GithubMon.prototype.hiddenPRs = [];
+  GithubMon.prototype.myId = [];
+  GithubMon.prototype.teamMates = [];
 
   function badging(text, color, title) {
     chrome.browserAction.setBadgeText({ text });
@@ -43,10 +45,7 @@ GithubMon = (function() {
   }
 
   GithubMon.prototype.render = function() {
-
     chrome.extension.sendMessage({ message: 'refresh' }, function(response) {});
-
-
     this.fetchRepositories();
     this.fetchPullRequests();
     this.populateRepoList();
@@ -59,8 +58,8 @@ GithubMon = (function() {
 
   GithubMon.prototype.fetchPullRequests = function() {
     this.hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
-    this.me = localStorage.getItem('me');
-    this.teamMates = localStorage.getItem('teamMates');
+    this.myId = localStorage.getItem('myId') || [];
+    this.teamMates = localStorage.getItem('teamMates') || [];
     return this.repositoryJSON = JSON.parse(localStorage.getItem('repos'));
   };
 
@@ -75,12 +74,15 @@ GithubMon = (function() {
           pullRequests = _(pullRequests).filter(function(pr) {
             return !_(_this.hiddenPRs).contains(pr.id);
           });
-
+          console.log(_this.myId)
+          console.log(_this.teamMates)
           if (_this.teamMates.length > 0) {
+            filtered = _this.teamMates.split(",");
 
-            me = _this.me.split(",");
-            teamMates = _this.teamMates.split(",");
-            filtered = teamMates.concat(me);
+            if (_this.myId.length > 0) {
+              myId = _this.myId.split(",");
+              filtered = filtered.concat(myId);
+            };
 
             pullRequests = _(pullRequests).filter(function(pr) {
               return _(filtered).contains(pr.user.login);
@@ -92,12 +94,12 @@ GithubMon = (function() {
             pullLength = pullRequests.length
             $('.version').text(pullLength);
 
-          color = '#3D7ADD';
-          if (pullLength > 7) {
-            color = '#ff0000';
-          }
+            color = '#3D7ADD';
+            if (pullLength > 7) {
+              color = '#ff0000';
+            }
 
-          badging(pullLength.toString(), color, 'PR Helper');
+            badging(pullLength.toString(), color, 'PR Helper');
 
             pullRequestsHTML = _(pullRequests).map(function(pr) {
 
@@ -206,19 +208,16 @@ GithubMon = (function() {
 
   GithubMon.prototype.renderHelpView = function() {
     $('.welcome').show();
-    return $('.save-token').on('click', (function(_this) {
+    return $('#options').on('click', (function(_this) {
       return function() {
-        var at, gah, gh;
-        if (at = $('#access-token').val()) {
-          localStorage.setItem('accessToken', at);
-          if (gh = $('#github-host').val()) {
-            localStorage.setItem('githubHost', gh);
+        var optionsUrl = "chrome://extensions/?options=" + chrome.runtime.id
+        chrome.tabs.query({ url: optionsUrl }, function(tabs) {
+          if (tabs.length) {
+            chrome.tabs.update(tabs[0].id, { active: true });
+          } else {
+            chrome.tabs.create({ url: optionsUrl });
           }
-          if (gah = $('#github-apihost').val()) {
-            localStorage.setItem('githubApiHost', gah);
-          }
-          $('.welcome').hide();
-        }
+        });
       };
     })(this));
   };

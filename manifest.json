@@ -1,4 +1,11 @@
 {
+   "name": "PR Helper",
+   "version": "2.5.1",
+   "description": "Keep track your PRs",
+   "homepage_url": "https://github.com/benjaminkwhite/PR-Helper",
+   "manifest_version": 2,
+   "minimum_chrome_version": "46",
+   "version": "2.0",
    "icons": {
       "128": "github-120.png",
       "16": "github-120.png",
@@ -10,8 +17,10 @@
       "run_at": "document_end"
    } ],
    "permissions": [
+      "tabs",
       "alarms"
    ],
+   "options_page": "options.html",
    "optional_permissions": [
       "tabs",
       "notifications"
@@ -33,14 +42,5 @@
    "options_ui": {
       "page": "options.html",
       "chrome_style": true
-   },
-   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtXMTMnK1+iylOcfIDqV2fmdrP+1Wae8vLlUtPof5Gyi7YUgk1JS5cKXNNLAr2oqKH1HC7nTIdV6qRpax7KOijgDlHMhtHfi3gswdtviNejTSfkceIgXGBkwErGsIeXg8n5oscSshTCiDjAlbhPqu/EWEF+L0/SByF8/Ji+HYqp07rf3s+d5HgIk19NMAZNPd0RE1qiGz1IFIG7R4daPq1AnXZ9tTEy7wTPNU6tULnmM67VcVHHFcx8bPxVaGDW9k519pU6+cPL4ABv0XIMY61QuAp82jJVsMg9xWRhmQ0X26+FaywjJidm4jFqgOxwRawx/BEvgAOUU1R2jNJ2dsSwIDAQAB",
-   "manifest_version": 2,
-   "name": "PR Helper",
-   "description": "Keep track your PRs",
-   "homepage_url": "https://www.google.ca/",
-   "update_url": "https://www.google.ca/",
-   "options_page": "options.html",
-   "permissions": [ "tabs", "http://*.github.com/*" ],
-   "version": "0.2.0"
+   }
 }
