@@ -18,8 +18,8 @@
         <a href="{{user_url}}" target="_blank"><img src="{{user_avatar}}" /></a>
       </p>
       <p><a href="{{html_url}}" target="_blank" class="pr-link">{{title}}</a></p>
-      <p>{{created_at}}       <span class="hide">hide</span></p>
-      <div style="right: 0; bottom: 0; position: absolute;">
+      <p>{{created_at}} <span class="hide">hide</span></p>
+      <div style="text-align: right;">
         <img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" class="thumb thumb1-{{thumb}}" />
         <img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" class="thumb thumb2-{{thumb}}" />
         <img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" class="check check-{{check}}" />
@@ -70,6 +70,9 @@
       <h3>Other</h3>
       <label for="refresh-rate">Refresh rate (mins)</label>
       <input type="text" id="refresh-rate" placeholder="5"/>
+    </section>
+    <section>
+      <input type="submit" value="Save" class="save-token" />
     </section>
   </div>
 </body>

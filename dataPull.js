@@ -133,12 +133,28 @@ Fetcher = (function() {
         if (hiddenPRs.length > 0) {
           hiddenPRs = JSON.parse(hiddenPRs);
         };
-        
+
         totalPR = _(repos).reduce(function(prev, prs) {
           var filtered;
           filtered = _(prs).filter(function(pr) {
             return !_(hiddenPRs).contains(pr.id);
           });
+
+          teamMates = localStorage.getItem('teamMates') || {};
+          me = localStorage.getItem('me') || {};
+
+          if (teamMates.length > 0) {
+
+            me = me.split(",");
+            teamMates = teamMates.split(",");
+            list = teamMates.concat(me);
+
+            filtered = _(filtered).filter(function(pr) {
+              return _(list).contains(pr.user.login);
+            });
+          };
+
+
           return prev + filtered.length;
         }, 0);
 
@@ -181,6 +197,8 @@ Fetcher = (function() {
             })(this));
           }, 0);
 
+        } else {
+          badging("", "#000000", 'PR Helper');
         }
         if (port) {
           return port.postMessage({

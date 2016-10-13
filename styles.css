@@ -8,11 +8,14 @@ body {
   font-size: 75%;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   -webkit-user-select: none;
   font-weight: normal;
   line-height: 1;
 }
+
 h3 {
   display: block;
   -webkit-margin-before: 1em;
@@ -39,8 +42,8 @@ header a {
   outline: none;
 }
 
-
-header h1, img {
+header h1,
+img {
   vertical-align: middle;
 }
 
@@ -50,6 +53,7 @@ header h1 {
   margin: 0;
   padding: 0;
   margin-left: 5px;
+    font-weight: bold;
 }
 
 .count {
@@ -69,17 +73,18 @@ span.description {
 section {
   -webkit-padding-start: 18px;
 }
+
 section h3 {
   -webkit-margin-start: -18px;
 }
 
-    .spacer {
-      margin: 14px 17px;
-    }
+.spacer {
+  margin: 14px 17px;
+}
 
-
-
-.welcome, .empty, .add-repo {
+.welcome,
+.empty,
+.add-repo {
   display: none;
 }
 
@@ -92,26 +97,18 @@ section h3 {
   padding: 3px;
 }
 
+.prs {
+  padding: 0 0 0 0px;
+    border-top: 1px solid #eee;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.pr:hover {
+  background-color: rgba(0, 0, 0, .05);
+}
 
 .pr {
-  margin-bottom: 6px;
+  padding: 10px;
+    border-bottom: 1px solid #eee;
 }
 
 .pr p {
@@ -137,6 +134,7 @@ section h3 {
   color: #333;
   text-decoration: none;
 }
+
 .pr .pr-link {
   color: #444;
   text-decoration: none;
@@ -155,7 +153,7 @@ section h3 {
 
 #repositories {
   list-style: none;
-  padding: 0 10px;
+  padding: 0 0;
 }
 
 #repositories > li > p {
@@ -181,13 +179,14 @@ section h3 {
   padding-bottom: 2px;
 }
 
-.thumb, .check{
+.thumb,
+.check {
   display: none;
-
   height: 20px;
   width: 20px;
 }
 
-.thumb:not(.thumb1-0):not(.thumb2-0):not(.thumb2-1), .check:not(.check-0) {
+.thumb:not(.thumb1-0):not(.thumb2-0):not(.thumb2-1),
+.check:not(.check-0) {
   display: inline-block;
 }

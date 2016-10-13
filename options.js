@@ -32,21 +32,24 @@
 
     loadSettings();
 
-    githubHostField.addEventListener('change', () => {
 
-      if (githubHostField.value === "") {
-        localStorage.setItem('githubHost', 'https://github.com');
-      } else {
-        localStorage.setItem('githubHost', githubHostField.value);
-      }
+  function stringClean(string){
+    string = string.replace(/\/$/, '');
+    string = string.trim()
+    return string;
+  };
+
+
+    githubHostField.addEventListener('change', () => {
+        localStorage.setItem('githubHost', stringClean(githubHostField.value));
     });
 
     githubApiHostField.addEventListener('change', () => {
-      localStorage.setItem('githubApiHost', githubApiHostField.value);
+      localStorage.setItem('githubApiHost', stringClean(githubApiHostField.value));
     });
 
     accessTokenField.addEventListener('change', () => {
-      localStorage.setItem('accessToken', accessTokenField.value);
+      localStorage.setItem('accessToken', stringClean(accessTokenField.value));
     });
 
     refreshRateField.addEventListener('change', () => {
@@ -79,4 +82,5 @@
       }
     });
   });
+
 })();
