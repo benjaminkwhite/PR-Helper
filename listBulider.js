@@ -74,8 +74,7 @@ GithubMon = (function() {
           pullRequests = _(pullRequests).filter(function(pr) {
             return !_(_this.hiddenPRs).contains(pr.id);
           });
-          console.log(_this.myId)
-          console.log(_this.teamMates)
+
           if (_this.teamMates.length > 0) {
             filtered = _this.teamMates.split(",");
 
@@ -110,6 +109,44 @@ GithubMon = (function() {
               filtered = _(commentsRequests).filter(function(prc) {
                 return _([prc.issue_url]).contains(issue_url);
               });
+
+              _(filtered).filter(function(prc) {
+
+                icon = escape(prc.body);
+
+                //  console.log(prc.html_url);
+
+                //uD83D%uDC4D
+
+                //%3A+1%3A
+
+                thumb = _(filtered).filter(function(prc) {
+                  icon = prc.body;
+                  return icon.indexOf(":+1:") > -1;
+                });
+
+
+
+                //console.log(icon.indexOf("uD83D%uDC4D"));
+              });
+
+              var mainArray = ["aedr", "aqwdt", "farc", "s2ss", "29", "38"],
+                check = ["a", "2"],
+                result;
+
+
+              tester = _(mainArray).filter(function(val) {
+                return _(check).filter(function(val2) {
+                  if (val.indexOf(val2) > -1) {
+                    return true;
+                  }
+                });
+              });
+
+
+              console.log(tester);
+
+
 
               thumb = _(filtered).filter(function(prc) {
                 icon = prc.body;

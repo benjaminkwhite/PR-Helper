@@ -5,7 +5,7 @@
    "homepage_url": "https://github.com/benjaminkwhite/PR-Helper",
    "manifest_version": 2,
    "minimum_chrome_version": "46",
-   "version": "2.0",
+   "version": "2.1",
    "icons": {
       "128": "github-120.png",
       "16": "github-120.png",
