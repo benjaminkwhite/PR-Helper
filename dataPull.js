@@ -11,16 +11,11 @@ Fetcher = (function() {
   Fetcher.prototype.repositories = [];
   Fetcher.prototype.port = null;
 
-
-
-
   function badging(text, color, title) {
     chrome.browserAction.setBadgeText({ text });
     chrome.browserAction.setBadgeBackgroundColor({ color });
     chrome.browserAction.setTitle({ title });
   }
-
-
 
   function Fetcher() {
 
@@ -150,7 +145,6 @@ Fetcher = (function() {
         if (totalPR > 0) {
 
           color = '#3D7ADD';
-
           if (totalPR > 7) {
             color = '#ff0000';
           }

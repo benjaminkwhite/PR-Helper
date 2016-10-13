@@ -6,8 +6,8 @@
     const githubApiHostField = document.getElementById('github-apihost');
     const accessTokenField = document.getElementById('access-token');
     const refreshRateField = document.getElementById('refresh-rate');
-    const teamMatesField = document.getElementById('team-mates');
-    const meField = document.getElementById('me');
+//    const teamMatesField = document.getElementById('team-mates');
+//    const meField = document.getElementById('me');
 //    const hiddenPRsField = document.getElementById('hiddenPRs');
     const gh_linkField = document.querySelector("#gh_link");
 
@@ -15,12 +15,17 @@
 
     function loadSettings() {
       githubHostField.value = localStorage.getItem('githubHost');
-      gh_linkField.href = localStorage.getItem('githubHost') + "/settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension"
+
+      var githubHost = localStorage.getItem('githubHost');
+        if (githubHost === "") {
+          githubHost = "https://github.com";
+        }
+      gh_linkField.href = githubHost + "/settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension"
       githubApiHostField.value = localStorage.getItem('githubApiHost');
       accessTokenField.value = localStorage.getItem('accessToken');
       refreshRateField.value = localStorage.getItem('refreshRate');
-      teamMatesField.value = localStorage.getItem('teamMates');
-      meField.value = localStorage.getItem('me');
+//      teamMatesField.value = localStorage.getItem('teamMates');
+//      meField.value = localStorage.getItem('me');
 //      hiddenPRsField.value = localStorage.getItem('hiddenPRs');
       showDesktopNotif.checked = localStorage.getItem('showDesktopNotif');
     }
@@ -48,13 +53,13 @@
       localStorage.setItem('refreshRate', refreshRateField.value);
     });
 
-    teamMatesField.addEventListener('change', () => {
-      localStorage.setItem('teamMates', teamMatesField.value);
-    });
+    // teamMatesField.addEventListener('change', () => {
+    //   localStorage.setItem('teamMates', teamMatesField.value);
+    // });
 
-    meField.addEventListener('change', () => {
-      localStorage.setItem('me', meField.value);
-    });
+    // meField.addEventListener('change', () => {
+    //   localStorage.setItem('me', meField.value);
+    // });
 
     // hiddenPRsField.addEventListener('change', () => {
     //   localStorage.setItem('hidden-PRs', hiddenPRsField.value);

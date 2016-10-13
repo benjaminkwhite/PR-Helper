@@ -1,23 +1,62 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>PR Helper</title>
-    <style>
-      section {
-        -webkit-padding-start: 18px;
-      }
-      section h3 {
-        -webkit-margin-start: -18px;
-      }
-      input[type='text'] {
-        width: 350px;
-      }
-      span.description {
-        font-style: italic;
-        color: grey;
-      }
-    </style>
+<head>
+  <meta charset="utf-8">
+  <title>PR Helper</title>
+  <style>
+header {
+    background-color: #f3f3f3;
+    background-image: linear-gradient(#f9f9f9, #f3f3f3);
+    background-repeat: repeat-x;
+}
+
+     input[type='text'] {
+      width: 350px;
+    }
+    span.description {
+      font-style: italic;
+      color: grey;
+    }
+
+  section {
+      -webkit-padding-start: 18px;
+    }
+    section h3 {
+      -webkit-margin-start: -18px;
+    }
+ 
+    h3 {
+      color: black;
+      font-size: 1.2em;
+      margin-bottom: 0.8em;
+    }
+    h1, h2, h3 {
+      -webkit-user-select: none;
+      font-weight: normal;
+      line-height: 1;
+    }
+    h3 {
+      display: block;
+      font-size: 1.17em;
+      -webkit-margin-before: 1em;
+      -webkit-margin-after: 1em;
+      -webkit-margin-start: 0px;
+      -webkit-margin-end: 0px;
+      font-weight: bold;
+    }
+    body {
+      color: rgb(51, 51, 51);
+      cursor: default;
+      margin: 14px 17px;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-size: 75%;
+    }
+
+
+
+  </style>
   </head>
   <body>
     <section>
@@ -35,25 +74,25 @@
     <section>
       <h3>API access</h3>
       <label for="access-token">Token</label>
-      <input type="text" id="access-token">
+    <input type="text" id="access-token" placeholder="Personal Access Token">
       <span class="description"><a id="gh_link" href="https://github.com/settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension" target="gh_target">Create a token</a> with the <strong>notifications</strong> permissions.</span>
     </section>
-    <section>
-      <h3>Other</h3>
-      <label for="refresh-rate">Refresh rate (mins)</label>
-      <input type="text" id="refresh-rate" placeholder="5"/>
-    </section>
-    <section>
-      <h3></h3>
-      <label for="me">Me</label>
-      <input type="text" id="me" placeholder=""/>
-    </section>
-    <section>
-      <h3></h3>
-      <label for="team-mates">Teammates</label>
-      <input type="text" id="team-mates" placeholder=""/>
-    </section>
+  <section>
+    <h3>Other</h3>
+    <label for="refresh-rate">Refresh rate (mins)</label>
+    <input type="text" id="refresh-rate" placeholder="5"/>
+  </section>
 <!--     <section>
+    <h3></h3>
+    <label for="me">Me</label>
+    <input type="text" id="me" placeholder=""/>
+  </section>
+  <section>
+    <h3></h3>
+    <label for="team-mates">Teammates</label>
+    <input type="text" id="team-mates" placeholder=""/>
+  </section>
+  <section>
       <h3></h3>
       <label for="hidden-PRs">hiddenPRs</label>
       <input type="text" id="hidden-PRs" placeholder=""/>
