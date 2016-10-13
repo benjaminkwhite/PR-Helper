@@ -147,6 +147,7 @@ Fetcher = (function() {
           return prev + filtered.length;
         }, 0);
 
+
         if (totalPR > 0) {
 
           color = '#3D7ADD';
@@ -187,6 +188,9 @@ Fetcher = (function() {
             })(this));
           }, 0);
 
+        }
+        else{
+          badging("", "#000000", 'PR Helper');
         }
         if (port) {
           return port.postMessage({
