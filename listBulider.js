@@ -203,21 +203,6 @@ GithubMon = (function() {
 
   GithubMon.prototype.renderHelpView = function() {
     $('.welcome').show();
-    return $('.save-token').on('click', (function(_this) {
-      return function() {
-        var at, gah, gh;
-        if (at = $('#access-token').val()) {
-          localStorage.setItem('accessToken', at);
-          if (gh = $('#github-host').val()) {
-            localStorage.setItem('githubHost', gh);
-          }
-          if (gah = $('#github-apihost').val()) {
-            localStorage.setItem('githubApiHost', gah);
-          }
-          $('.welcome').hide();
-        }
-      };
-    })(this));
   };
 
   return GithubMon;
