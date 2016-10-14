@@ -53,7 +53,7 @@ header h1 {
   margin: 0;
   padding: 0;
   margin-left: 5px;
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .count {
@@ -99,7 +99,7 @@ section h3 {
 
 .prs {
   padding: 0 0 0 0px;
-    border-top: 1px solid #eee;
+  border-top: 1px solid #eee;
 }
 
 .pr:hover {
@@ -108,13 +108,13 @@ section h3 {
 
 .pr {
   padding: 10px;
-    border-bottom: 1px solid #eee;
+  display: block;
+  border-bottom: 1px solid #eee;
 }
 
 .pr p {
   padding: 0 0 3px 30px;
   margin: 0;
-  color: #999;
   font-size: 10px;
 }
 
@@ -179,14 +179,7 @@ section h3 {
   padding-bottom: 2px;
 }
 
-.thumb,
-.check {
-  display: none;
-  height: 20px;
-  width: 20px;
-}
-
-.thumb:not(.thumb1-0):not(.thumb2-0):not(.thumb2-1),
-.check:not(.check-0) {
-  display: inline-block;
+.icon {
+  height: 30px;
+  width: 30px;
 }

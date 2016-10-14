@@ -110,43 +110,69 @@ GithubMon = (function() {
                 return _([prc.issue_url]).contains(issue_url);
               });
 
-              _(filtered).filter(function(prc) {
 
-                icon = escape(prc.body);
+              var check = ["%uD83D%uDC4D", "%3A+1%3A", "%3Awhite_check_mark%3A", "%u2705", "%3Arepeat%3A", "%uD83D%uDD01"]
+              var thumbIcon, checkIcon, repeatIcon, message, iconString
 
-                //  console.log(prc.html_url);
+              thumbIcon = 0
+              checkIcon = 0
+              repeatIcon = 0
+              iconString = ""
 
-                //uD83D%uDC4D
-
-                //%3A+1%3A
-
-                thumb = _(filtered).filter(function(prc) {
-                  icon = prc.body;
-                  return icon.indexOf(":+1:") > -1;
-                });
-
-
-
-                //console.log(icon.indexOf("uD83D%uDC4D"));
-              });
-
-              var mainArray = ["aedr", "aqwdt", "farc", "s2ss", "29", "38"],
-                check = ["a", "2"],
-                result;
-
-
-              tester = _(mainArray).filter(function(val) {
-                return _(check).filter(function(val2) {
-                  if (val.indexOf(val2) > -1) {
-                    return true;
+              _(filtered).map(function(prc) {
+                message = escape(prc.body)
+                
+              console.log(prc.body)
+              console.log(message)
+                _(check).map(function(icon) {
+                  if (message.indexOf(icon) > -1 && icon == "%uD83D%uDC4D") {
+                    thumbIcon++
+                    if (thumbIcon < 3) {
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" alt="" class="icon"/>'
+                    }
+                  }
+                  if (message.indexOf(icon) > -1 && icon == "%3A+1%3A") {
+                    thumbIcon++
+                    if (thumbIcon < 3) {
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" alt="" class="icon"/>'
+                    }
+                  }
+                  if (message.indexOf(icon) > -1 && icon == "%3Awhite_check_mark%3A") {
+                    checkIcon++
+                    if (checkIcon < 2) {
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
+                    }
+                  }
+                  if (message.indexOf(icon) > -1 && icon == "%u2705") {
+                    checkIcon++
+                    if (checkIcon < 2) {
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
+                    }
+                  }
+                  if (message.indexOf(icon) > -1 && icon == "%3Arepeat%3A") {
+                    repeatIcon++
+                    thumbIcon = 0
+                    checkIcon = 0
+                    if (checkIcon < 2) {
+                      iconString = iconString + '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>'
+                    }
+                  }
+                  if (message.indexOf(icon) > -1 && icon == "%uD83D%uDD01") {
+                    repeatIcon++
+                    thumbIcon = 0
+                    checkIcon = 0
+                    if (checkIcon < 2) {
+                      iconString = iconString + '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>'
+                    }
                   }
                 });
               });
 
 
-              console.log(tester);
-
-
+              console.log('thumbIcon ' + thumbIcon)
+              console.log('checkIcon ' + checkIcon)
+              console.log('repeatIcon ' + repeatIcon)
+              console.log(iconString)
 
               thumb = _(filtered).filter(function(prc) {
                 icon = prc.body;
@@ -168,6 +194,7 @@ GithubMon = (function() {
                 git_host: _this.githubHost,
                 thumb: thumb.length,
                 check: check.length,
+                iconString: iconString,
                 created_at: moment.utc(pr.created_at).fromNow()
               });
             });
