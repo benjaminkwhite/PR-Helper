@@ -122,8 +122,6 @@ GithubMon = (function() {
               _(filtered).map(function(prc) {
                 message = escape(prc.body)
                 
-              console.log(prc.body)
-              console.log(message)
                 _(check).map(function(icon) {
                   if (message.indexOf(icon) > -1 && icon == "%uD83D%uDC4D") {
                     thumbIcon++
@@ -167,23 +165,6 @@ GithubMon = (function() {
                   }
                 });
               });
-
-
-              console.log('thumbIcon ' + thumbIcon)
-              console.log('checkIcon ' + checkIcon)
-              console.log('repeatIcon ' + repeatIcon)
-              console.log(iconString)
-
-              thumb = _(filtered).filter(function(prc) {
-                icon = prc.body;
-                return icon.indexOf(":+1:") > -1;
-              });
-
-              check = _(filtered).filter(function(prc) {
-                icon = prc.body;
-                return icon.indexOf(":white_check_mark:") > -1;
-              });
-
               return _.template(_this.pullRequestTemplate, {
                 id: pr.id,
                 title: pr.title,
@@ -192,8 +173,6 @@ GithubMon = (function() {
                 user_avatar: pr.user.avatar_url,
                 user_url: pr.user.html_url,
                 git_host: _this.githubHost,
-                thumb: thumb.length,
-                check: check.length,
                 iconString: iconString,
                 created_at: moment.utc(pr.created_at).fromNow()
               });
