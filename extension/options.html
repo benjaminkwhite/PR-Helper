@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Notifier for GitHub</title>
+		<style>
+			section {
+				-webkit-padding-start: 18px;
+			}
+			section h3 {
+				-webkit-margin-start: -18px;
+			}
+			input[type='text'] {
+				width: 350px;
+			}
+			span.description {
+				font-style: italic;
+				color: grey;
+			}
+		</style>
+		<script src="api.js"></script>
+		<script src="options.js"></script>
+	</head>
+	<body>
+		<section>
+			<h3>Custom URL</h3>
+			<label for="root_url">Root URL</label>
+			<input type="text" id="root_url" autofocus placeholder="e.g. https://github.yourco.com/">
+			<span class="description">Specify the root URL to your GitHub Enterprise</span>
+		</section>
+		<section>
+			<h3>API access</h3>
+			<label for="oauth_token">Token</label>
+			<input type="text" id="oauth_token">
+			<span class="description">For public repositories, <a id="gh_link" href="https://github.com/settings/tokens/new?scopes=notifications&description=Notifier for GitHub Chrome extension" target="gh_target">create a token</a> with the <strong>notifications</strong> permission and specify it.</span><br />
+			<span class="description">If you want notifications for private repositories, you'll need to <a id="gh_link" href="https://github.com/settings/tokens/new?scopes=notifications,repo&description=Notifier for GitHub Chrome extension" target="gh_target">create a token</a> with the <strong>notifications</strong> and <strong>repo</strong> permissions.</span>
+		</section>
+		<section>
+			<h3>Participating Count</h3>
+			<input type="checkbox" id="use_participating">
+			<label for="use_participating">Only show unread count for issues I'm participating in</label>
+		</section>
+		<section>
+ 			<h3>Desktop Notifications</h3>
+ 			<input type="checkbox" id="show_desktop_notif">
+ 			<label for="show_desktop_notif">Show desktop notifications</label>
+ 		</section>
+	</body>
+</html>
