@@ -3,7 +3,6 @@
 
 <head>
   <link rel="stylesheet" type="text/css" href="styles.css" />
-
   <template type="text/html" id="repository-row">
     <li data-id="{{name}}">
       <p>
@@ -14,11 +13,13 @@
   </template>
   <template type="text/html" id="pull-request-row">
     <li class="pr" data-id="{{id}}">
-      <p class="avatar">
+      <div class="avatar">
         <a href="{{user_url}}" target="_blank"><img src="{{user_avatar}}" /></a>
-      </p>
-      <p><a href="{{html_url}}" target="_blank" class="pr-link">{{title}}</a></p>
-      <p>{{created_at}} <span class="hide">hide</span></p>
+      </div>
+      <div class="title">
+        <a href="{{html_url}}" target="_blank" class="pr-link">{{title}}</a>
+        <div>{{age}} - {{created_at}} <span class="hide">hide</span></div>
+      </div>
       <div style="text-align: right;">
         {{iconString}}
       </div>
@@ -46,9 +47,10 @@
   <p class='empty'>Please add your favorite repositories!</p>
   <p class='empty'>Just click on this popup under your repo's github page.</p>
   <div class="welcome spacer">
-   Please go to options to set this tool up!<br/>
-   <br/>
-   <button id="options">Click Here</button>
+    Please go to options to set this tool up!
+    <br/>
+    <br/>
+    <button id="options">Click Here</button>
   </div>
 </body>
 

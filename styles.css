@@ -113,21 +113,29 @@ section h3 {
   border-bottom: 1px solid #eee;
 }
 
-.pr p {
-  padding: 0 0 3px 30px;
+.pr div {
+  padding: 0 0 3px 0;
   margin: 0;
   font-size: 10px;
+  line-height: 20px;
+}
+
+.pr div.title {
+  display: inline-block;
+  width: 340px;
 }
 
 .pr .avatar {
-  float: left;
   padding: 0;
+  width: 34px;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .pr .avatar img {
-  width: 20px;
-  height: 20px;
-  border-radius: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
   margin-right: 10px;
 }
 
@@ -183,4 +191,10 @@ section h3 {
 .icon {
   height: 30px;
   width: 30px;
+}
+
+.icon_small {
+  height: 20px;
+  width: 20px;
+  float: left;
 }

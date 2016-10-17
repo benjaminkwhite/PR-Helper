@@ -121,41 +121,21 @@ GithubMon = (function() {
 
               _(filtered).map(function(prc) {
                 message = escape(prc.body)
-                
+
                 _(check).map(function(icon) {
-                  if (message.indexOf(icon) > -1 && icon == "%uD83D%uDC4D") {
+                  if (message.indexOf(icon) > -1 && icon == "%uD83D%uDC4D" || message.indexOf(icon) > -1 && icon == "%3A+1%3A") {
                     thumbIcon++
                     if (thumbIcon < 3) {
                       iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" alt="" class="icon"/>'
                     }
                   }
-                  if (message.indexOf(icon) > -1 && icon == "%3A+1%3A") {
-                    thumbIcon++
-                    if (thumbIcon < 3) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" alt="" class="icon"/>'
-                    }
-                  }
-                  if (message.indexOf(icon) > -1 && icon == "%3Awhite_check_mark%3A") {
+                  if (message.indexOf(icon) > -1 && icon == "%3Awhite_check_mark%3A" || message.indexOf(icon) > -1 && icon == "%u2705") {
                     checkIcon++
                     if (checkIcon < 2) {
                       iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
                     }
                   }
-                  if (message.indexOf(icon) > -1 && icon == "%u2705") {
-                    checkIcon++
-                    if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
-                    }
-                  }
-                  if (message.indexOf(icon) > -1 && icon == "%3Arepeat%3A") {
-                    repeatIcon++
-                    thumbIcon = 0
-                    checkIcon = 0
-                    if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>'
-                    }
-                  }
-                  if (message.indexOf(icon) > -1 && icon == "%uD83D%uDD01") {
+                  if (message.indexOf(icon) > -1 && icon == "%3Arepeat%3A" || message.indexOf(icon) > -1 && icon == "%uD83D%uDD01") {
                     repeatIcon++
                     thumbIcon = 0
                     checkIcon = 0
@@ -165,6 +145,23 @@ GithubMon = (function() {
                   }
                 });
               });
+
+              var age = (moment(new Date()).diff(moment.utc(pr.created_at), 'days'))
+              switch (age) {
+                case 0:
+                  face = '<img src="baby.png" alt="" class="icon_small"/>';
+                  break;
+                case 1:
+                  face = '<img src="boy.png" alt="" class="icon_small"/>';
+                  break;
+                case 2:
+                  face = '<img src="man.png" alt="" class="icon_small"/>';
+                  break;
+                case 3:
+                  face = '<img src="older_man.png" alt="" class="icon_small"/>';
+                  break;
+              }
+
               return _.template(_this.pullRequestTemplate, {
                 id: pr.id,
                 title: pr.title,
@@ -174,6 +171,7 @@ GithubMon = (function() {
                 user_url: pr.user.html_url,
                 git_host: _this.githubHost,
                 iconString: iconString,
+                age: face,
                 created_at: moment.utc(pr.created_at).fromNow()
               });
             });

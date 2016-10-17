@@ -110,7 +110,7 @@ Fetcher = (function() {
       return function(repo) {
         return dfds.push($.ajax({
           type: 'get',
-          url: _this.apihost + ("/repos/" + repo + "/pulls?access_token=" + _this.accessToken),
+          url: _this.apihost + ("/repos/" + repo + "/pulls?per_page=100&access_token=" + _this.accessToken),
           success: function(data) {
             return _this.store(repo, data);
           },
