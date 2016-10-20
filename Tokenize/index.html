@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Demo</title>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="excel-2007.css" />
+  <link href="tokenize2.css" rel="stylesheet" />
+  <link href="demo.css" rel="stylesheet" />
+  <style>
+  .ExcelTable2007 th {
+    text-align: center;
+  }
+  
+  .ExcelTable2007 td {
+    min-width: 70px;
+  }
+  
+  .ExcelTable2007 td:first-child {
+    min-width: 26px;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <nav class="navbar navbar-default">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Title of page</a>
+      </div>
+    </nav>
+    <div class="row list ui-sortable">
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <button js-addLine>Add new line</button>
+        <br>
+        <br>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 fauxTable">
+        <table id="TheTable" border="1" class="ExcelTable2007">
+          <tr>
+            <th class="heading">&nbsp;</th>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+            <th>D</th>
+          </tr>
+          <tr>
+            <td align="left" valign="bottom" class="heading">1</td>
+            <td align="left" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom"><b>&nbsp;</b></td>
+            <td align="right" valign="bottom"><b>&nbsp;</b></td>
+            <td align="right" valign="bottom"><b>&nbsp;</b></td>
+          </tr>
+          <tr>
+            <td class="heading">2</td>
+            <td align="left" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="heading">3</td>
+            <td align="left" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="heading">4</td>
+            <td align="left" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+            <td align="right" valign="bottom">&nbsp;</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="tokenize2.js"></script>
+  <script>
+  var temp, id, newID;
+
+
+  $('[js-addLine]').click(function() {
+
+    temp = 0
+    newID = 'select0';
+    $(".tokenize-callable-demo1").each(function() {
+      id = $(this).attr("id")
+      id = parseInt(id.replace(/[^0-9\.]/g, ''));
+      if (id > temp) {
+        temp = id;
+      }
+      newID = 'select' + (temp + 1);
+    });
+
+    template = '<div class="portlet ui-helper-clearfix"><div class="col-sm-3"><div type="button" class="btn btn-default portlet-handle ui-sortable-handle"><span class="glyphicon glyphicon-menu-hamburger"></span></div><input type="text" class="columnName form-control" js-data placeholder="Column Name"></div><div class="col-sm-9"><select class="tokenize-callable-demo1" js-data id="' + newID + '" multiple></select></div></div>';
+
+    $(".list").append(template);
+
+    $('.tokenize-callable-demo1').tokenize2({
+      placeholder: 'Please add new tokens',
+      tokensMaxItems: 5,
+      dataSource: function(search, object) {
+        $.ajax('remote.php', {
+          data: {
+            search: search,
+            start: 0
+          },
+          dataType: 'json',
+          success: function(data) {
+            var $items = [];
+            $.each(data, function(k, v) {
+              $items.push(v);
+            });
+            object.trigger('tokenize:dropdown:fill', [$items]);
+          }
+        });
+      }
+    });
+
+    $.extend($('#' + newID + '.tokenize-callable-demo1').tokenize2(), {
+      dropdownItemFormat: function(v) {
+        return $('<a />').html(v.text + ' ' + v.long).attr({
+          'data-value': v.value,
+          'data-long': v.long,
+          'data-text': v.text
+        })
+      }
+    });
+
+  });
+
+  $('[js-addLine]').click();
+
+
+  $(".ui-sortable").sortable({
+    handle: ".portlet-handle",
+    placeholder: "portlet-placeholder"
+  });
+  
+  function toColumnName(num) {  
+    for (var ret = '', a = 1, b = 26;
+      (num -= a) >= 0; a = b, b *= 26) {    
+      ret = String.fromCharCode(parseInt((num % b) / a) + 65) + ret;  
+    }  
+    return ret;
+  }
+
+  function buildTable() { 
+    var newTable = '<table border="1" class="ExcelTable2007"><tbody><tr><th class="heading">&nbsp;</th>';
+
+    var count = 1
+    $('[js-data]').each(function() {
+      if ($(this).prop("tagName") === 'INPUT') {
+        newTable = newTable + '<th>' + toColumnName(count++) + '</th>';
+      }
+    });
+
+    newTable = newTable + '</tr><tr><td align="left" valign="bottom" class="heading">1</td>';
+
+    $('[js-data]').each(function() {
+      if ($(this).prop("tagName") === 'INPUT') {
+        newTable = newTable + '<td>' + $(this).val() + '</td>';
+      }
+    });
+
+    newTable = newTable + '</tr><tr><td align="left" valign="bottom" class="heading">2</td>';
+
+    $('[js-data]').each(function() {
+
+      if ($(this).prop("tagName") === 'SELECT') {
+        var test = $(this).val()
+        if (test != null) {
+          newTable = newTable + '<td>' + test.toString().replace(/,/g, "") + '</td>';
+        } else {
+          newTable = newTable + '<td align="right" valign="bottom">&nbsp;</td>';
+        }
+      }
+    })
+
+    newTable = newTable + '</tr><tr><td align="left" valign="bottom" class="heading">3</td>';
+    $('[js-data]').each(function() {
+      if ($(this).prop("tagName") === 'INPUT') {
+          newTable = newTable + '<td align="right" valign="bottom">&nbsp;</td>';
+      }
+    });
+
+    newTable = newTable + '</tr><tr><td align="left" valign="bottom" class="heading">4</td>';
+    $('[js-data]').each(function() {
+      if ($(this).prop("tagName") === 'INPUT') {
+          newTable = newTable + '<td align="right" valign="bottom">&nbsp;</td>';
+      }
+    });
+
+    newTable = newTable + '</tr></tbody></table>';
+
+    $(".fauxTable").html(newTable);
+
+  }
+
+  $(document).on('change', 'input', function() {
+    buildTable();
+  });
+
+
+
+
+
+  </script>
+</body>
+
+</html>
