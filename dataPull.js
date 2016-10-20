@@ -164,30 +164,22 @@ Fetcher = (function() {
 
           var commentsRequests = JSON.parse(localStorage.getItem('comments'));
 
-          var groups = _.groupBy(commentsRequests, function(value){
+
+filterBody = function(array) {
+  return _.filter(array, function(pr) {
+    if (escape(pr.body).indexOf("%3Afour_leaf_clover%3A") > -1) {
+      return true;
+    }
+  });
+}
+
+          var mySubArray = _.uniq(filterBody(commentsRequests), function(value){
             return value.issue_url;
           });
 
 
-         console.log(groups);
 
-
-
-         data = _(groups).map(function(group) {
-            console.log(group[0].issue_url);
-           console.log(group[0].body);
-
-        });
-
-          //  var data = _(groups).map(function(group) {
-
-          //   return {
-          //     issue_url: group[0].issue_url,
-          //     body: _.pluck(group, 'body')
-          //   }
-          // });
-
-           console.log(data);
+           console.log(mySubArray.length);
 
 
 
