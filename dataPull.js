@@ -158,6 +158,41 @@ Fetcher = (function() {
           return prev + filtered.length;
         }, 0);
 
+
+
+
+
+          var commentsRequests = JSON.parse(localStorage.getItem('comments'));
+
+          var groups = _.groupBy(commentsRequests, function(value){
+            return value.issue_url;
+          });
+
+
+         console.log(groups);
+
+
+
+         data = _(groups).map(function(group) {
+            console.log(group[0].issue_url);
+           console.log(group[0].body);
+
+        });
+
+          //  var data = _(groups).map(function(group) {
+
+          //   return {
+          //     issue_url: group[0].issue_url,
+          //     body: _.pluck(group, 'body')
+          //   }
+          // });
+
+           console.log(data);
+
+
+
+
+
         if (totalPR > 0) {
 
           color = '#3D7ADD';

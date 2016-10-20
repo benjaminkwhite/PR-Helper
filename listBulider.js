@@ -111,7 +111,7 @@ GithubMon = (function() {
               });
 
 
-              var check = ["%uD83D%uDC4D", "%3A+1%3A", "%3Awhite_check_mark%3A", "%u2705", "%3Arepeat%3A", "%uD83D%uDD01"]
+              var check = ["%uD83D%uDC4D", "%3Apackage%3A", , "%3A+1%3A", "%3Awhite_check_mark%3A", "%u2705", "%3Arepeat%3A", "%uD83D%uDD01"]
               var thumbIcon, checkIcon, repeatIcon, message, iconString
 
               thumbIcon = 0
@@ -135,30 +135,33 @@ GithubMon = (function() {
                       iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
                     }
                   }
+                  if (message.indexOf(icon) > -1 && icon == "%3Apackage%3A") {
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4e6.png" alt="" class="icon"/>'
+                  }
                   if (message.indexOf(icon) > -1 && icon == "%3Arepeat%3A" || message.indexOf(icon) > -1 && icon == "%uD83D%uDD01") {
                     repeatIcon++
                     thumbIcon = 0
                     checkIcon = 0
                     if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>'
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>'
                     }
                   }
                 });
               });
 
-              var age = (moment(new Date()).diff(moment.utc(pr.created_at), 'days'))
-              switch (age) {
-                case 0:
-                  face = '<img src="baby.png" alt="" class="icon_small"/>';
+              var age = (moment(new Date()).diff(moment.utc(pr.created_at), 'hours'))
+              switch (true) {
+                case (age <= 20):
+                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f476.png" alt="" class="icon_small"/>';
                   break;
-                case 1:
-                  face = '<img src="boy.png" alt="" class="icon_small"/>';
+                case (age <= 34):
+                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f466.png" alt="" class="icon_small"/>';
                   break;
-                case 2:
-                  face = '<img src="man.png" alt="" class="icon_small"/>';
+                case (age <= 59):
+                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f468.png" alt="" class="icon_small"/>';
                   break;
-                case 3:
-                  face = '<img src="older_man.png" alt="" class="icon_small"/>';
+                default:
+                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f474.png" alt="" class="icon_small"/>';
                   break;
               }
 
@@ -272,6 +275,5 @@ $(function() {
     var mon;
     return mon = new GithubMon(tab.url);
   }); //  var mon;
-  //  return mon = new GithubMon('https://github.corp.achievers.com/BE/PFA/pulls');
 
 });
