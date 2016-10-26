@@ -134,11 +134,12 @@ Fetcher = (function() {
           hiddenPRs = JSON.parse(hiddenPRs);
         };
 
-        totalPR = _(repos).reduce(function(prev, prs) {
           var filtered;
+        totalPR = _(repos).reduce(function(prev, prs) {
           filtered = _(prs).filter(function(pr) {
             return !_(hiddenPRs).contains(pr.id);
           });
+
 
           teamMates = localStorage.getItem('teamMates') || {};
           myId = localStorage.getItem('myId') || {};
@@ -160,39 +161,39 @@ Fetcher = (function() {
 
 
 
+        var commentsRequests = JSON.parse(localStorage.getItem('comments'));
+
+          issue_url = _.pluck(filtered, 'issue_url');
 
 
-          var commentsRequests = JSON.parse(localStorage.getItem('comments'));
-
-
-filterBody = function(array) {
-  return _.filter(array, function(pr) {
-    if (escape(pr.body).indexOf("%3Afour_leaf_clover%3A") > -1) {
-      return true;
-    }
-  });
-}
-
-          var mySubArray = _.uniq(filterBody(commentsRequests), function(value){
-            return value.issue_url;
+          filteredComments = _(commentsRequests).filter(function(pr) {
+            return _(issue_url).contains(pr.issue_url);
           });
 
+        filterBody = function(array) {
+          return _.filter(array, function(pr) {
+            if (escape(pr.body).indexOf("%3Awhite_check_mark%3A") > -1 || escape(pr.body).indexOf("%3Afacepunch%3A") > -1 || escape(pr.body).indexOf("%u2705") > -1) {
+              return true;
+            }
+          });
+        }
+
+        var mySubArray = _.uniq(filterBody(filteredComments), function(value) {
+          return value.issue_url;
+        });
 
 
-           console.log(mySubArray.length);
 
 
 
-
-
-        if (totalPR > 0) {
+        if ((totalPR-mySubArray.length) > 0) {
 
           color = '#3D7ADD';
-          if (totalPR > 7) {
+          if ((totalPR-mySubArray.length) > 7) {
             color = '#ff0000';
           }
 
-          badging(totalPR.toString(), color, 'PR Helper');
+          badging((totalPR-mySubArray.length).toString(), color, 'PR Helper');
 
           comments = _(repos).reduce(function(prev, prs) {
 
@@ -257,3 +258,23 @@ interval = 10000;
 setInterval(function() {
   return fetcher.fetch();
 }, interval);
+
+
+var cakeNotification = "cake-notification"
+
+var CAKE_INTERVAL = .5;
+
+chrome.alarms.create("", {periodInMinutes: CAKE_INTERVAL});
+
+chrome.alarms.onAlarm.addListener(function(alarm) {
+  chrome.notifications.create(cakeNotification, {
+    "type": "basic",
+    "iconUrl": chrome.extension.getURL("icon-128.png"),
+    "title": "Time for cake!",
+    "message": "Something something cake"
+  });
+});
+
+chrome.browserAction.onClicked.addListener(function () {
+  chrome.notifications.clear(cakeNotification);
+});
