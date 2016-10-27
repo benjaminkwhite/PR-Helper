@@ -38,6 +38,7 @@
 	})();
 
 	window.GitHubNotify.requestPermission = permission => {
+console.log("requestPermission")
 		return new Promise(resolve => {
 			chrome.permissions.request({
 				permissions: [permission]
@@ -49,6 +50,7 @@
 	};
 
 	window.GitHubNotify.queryPermission = permission => {
+console.log("queryPermission")
 		return new Promise(resolve => {
 			chrome.permissions.contains({
 				permissions: [permission]
@@ -57,6 +59,7 @@
 	};
 
 	window.GitHubNotify.request = url => {
+console.log("request")
 		const token = window.GitHubNotify.settings.get('oauthToken');
 		if (!token) {
 			return Promise.reject(new Error('missing token'));
@@ -73,6 +76,7 @@
 	};
 
 	window.GitHubNotify.getApiUrl = () => {
+console.log("getApiUrl")
 		const rootUrl = window.GitHubNotify.settings.get('rootUrl');
 
 		if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
@@ -82,6 +86,7 @@
 	};
 
 	window.GitHubNotify.getTabUrl = () => {
+console.log("getTabUrl")
 		let rootUrl = window.GitHubNotify.settings.get('rootUrl');
 
 		if (/api.github.com\/$/.test(rootUrl)) {
@@ -96,6 +101,7 @@
 	};
 
 	window.GitHubNotify.buildQuery = options => {
+console.log("buildQuery")
 		const perPage = options.perPage;
 		const query = [`per_page=${perPage}`];
 		if (window.GitHubNotify.settings.get('useParticipatingCount')) {
@@ -105,6 +111,7 @@
 	};
 
 	window.gitHubNotifCount = () => {
+console.log("gitHubNotifCount")
 		const query = window.GitHubNotify.buildQuery({perPage: 1});
 		const url = `${window.GitHubNotify.getApiUrl()}?${query.join('&')}`;
 

@@ -260,6 +260,15 @@ setInterval(function() {
 }, interval);
 
 
+  // launch options page on first run
+  chrome.runtime.onInstalled.addListener(details => {
+    if (details.reason === 'install') {
+      chrome.runtime.openOptionsPage();
+    }
+  });
+
+
+
 var cakeNotification = "cake-notification"
 
 var CAKE_INTERVAL = .5;
