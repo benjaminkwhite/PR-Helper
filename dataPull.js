@@ -104,9 +104,19 @@ Fetcher = (function() {
     this.accessToken = localStorage.getItem('accessToken');
     this.apihost = localStorage.getItem('githubApiHost') ? localStorage.getItem('githubApiHost') : 'https://api.github.com';
     this.repositories = JSON.parse(localStorage.getItem('repositories'));
+    
+    _(this.repositories).each((function(_this) {
+      
+    console.log(_this);
+      
+    }));
+
+
+
 
     dfds = [];
     _(this.repositories).each((function(_this) {
+      
       return function(repo) {
         return dfds.push($.ajax({
           type: 'get',

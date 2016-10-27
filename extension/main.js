@@ -8,7 +8,7 @@
 	}
 
 	function getNotificationReasonText(reason) {
-console.log("getNotificationReasonText")
+//console.log("getNotificationReasonText")
 //console.log(reason)
 		/* eslint-disable camelcase */
 		const reasons = {
@@ -27,7 +27,7 @@ console.log("getNotificationReasonText")
 	}
 
 	function showDesktopNotifications(notifications, lastModifed) {
-console.log("showDesktopNotifications")
+//console.log("showDesktopNotifications")
 //console.log(notifications)
 //console.log(lastModifed)
 		const lastModifedTime = new Date(lastModifed).getTime();
@@ -44,15 +44,17 @@ console.log("showDesktopNotifications")
 				contextMessage: getNotificationReasonText(notification.reason)
 			});
 
-			window.GitHubNotify.settings.set(notificationId, notification.subject.url);
+//			window.GitHubNotify.settings.set(notificationId, notification.subject.url);
 		});
 	}
 
 	function checkDesktopNotifications(lastModifed) {
-console.log("checkDesktopNotifications")
+//console.log("checkDesktopNotifications")
 //console.log(lastModifed)
 		const query = window.GitHubNotify.buildQuery({perPage: 100});
 		const url = `${window.GitHubNotify.getApiUrl()}?${query.join('&')}`;
+
+//console.log(url)
 
 		window.GitHubNotify.request(url).then(res => res.json()).then(notifications => {
 			showDesktopNotifications(notifications, lastModifed);
@@ -61,9 +63,10 @@ console.log("checkDesktopNotifications")
 
 
 	function handleLastModified(date) {
-console.log("handleLastModified")
+//console.log("handleLastModified")
 //console.log(date)
 		let lastModifed = window.GitHubNotify.settings.get('lastModifed');
+//console.log(lastModifed)
 		const emptyLastModified = String(lastModifed) === 'null' || String(lastModifed) === 'undefined';
 		lastModifed = emptyLastModified ? new Date(0) : lastModifed;
 
@@ -76,7 +79,7 @@ console.log("handleLastModified")
 	}
 
 	function handleInterval(interval) {
-console.log("handleInterval")
+//console.log("handleInterval")
 //console.log(interval)
 		let period = 1;
 		let intervalSetting = parseInt(window.GitHubNotify.settings.get('interval'), 10);
@@ -94,7 +97,7 @@ console.log("handleInterval")
 	}
 
 	function handleError(error) {
-console.log("handleError")
+//console.log("handleError")
 		let symbol = '?';
 		let text;
 
@@ -121,7 +124,7 @@ console.log("handleError")
 	}
 
 	function handleCount(count) {
-console.log("handleCount")
+//console.log("handleCount")
 		if (count === 0) {
 			return '';
 		} else if (count > 9999) {
@@ -131,7 +134,7 @@ console.log("handleCount")
 	}
 
 	function scheduleAlarm(period) {
-console.log("scheduleAlarm")
+//console.log("scheduleAlarm")
 //console.log(period)
 		// unconditionally schedule alarm
 		// period is in minutes
@@ -139,22 +142,31 @@ console.log("scheduleAlarm")
 	}
 
 	function update() {
-console.log("update")
-		window.gitHubNotifCount().then(response => {
-			const count = response.count;
-			const interval = response.interval;
-			const lastModifed = response.lastModifed;
-			const period = handleInterval(interval);
+//console.log("update")
+		// window.gitHubNotifCount().then(response => {
+		// 	const count = response.count;
+		// 	const interval = response.interval;
+		// 	const lastModifed = response.lastModifed;
+		// 	const period = handleInterval(interval);
 
-			scheduleAlarm(period);
-			handleLastModified(lastModifed);
+		// 	scheduleAlarm(period);
+		// 	handleLastModified(lastModifed);
 
-			render(handleCount(count), [65, 131, 196, 255], 'Notifier for GitHub');
-		}).catch(handleError);
+		// 	render(handleCount(count), [65, 131, 196, 255], 'Notifier for GitHub');
+		// }).catch(handleError);
+
+
+
+
+		window.gitHubNotifCount()
+
+
+
+
 	}
 
 	function openTab(url, tab) {
-console.log("openTab")
+//console.log("openTab")
 		// checks optional permissions
 		window.GitHubNotify.queryPermission('tabs').then(granted => {
 			if (granted) {
