@@ -111,80 +111,105 @@ window.GitHubNotify.buildQuery = options => {
   return query;
 };
 
+
+let tempCount
+
 window.gitHubNotifCount = () => {
 
-
-
-				// return response.json().then(response => {
-				// 	return {count: data.length, interval, lastModifed};
-				// });
-
-			
-
   let repositories = JSON.parse(window.GitHubNotify.settings.get('repositories'));
-
 
   repositories.forEach(repo => {
     const query = window.GitHubNotify.buildQuery({ perPage: 100 });
     const url = `${window.GitHubNotify.getApiUrl(repo)}?${query.join('&')}`;
 
     window.GitHubNotify.request(url).then(response => {
-      const interval = Number(response.headers.get('X-Poll-Interval'));
-      //      const lastModifed = response.headers.get('Last-Modified');
+      response.json().then(repoData => {
+      	tempCount = repoData.length
+      	console.log(tempCount)
 
-      const linkheader = response.headers.get('Link');
+      	var hiddenPRs, reducedPRs, teamMates, myId, list;
 
-      if (linkheader === null) {
+        hiddenPRs = window.GitHubNotify.settings.get('hiddenPRs');
+        if (hiddenPRs.length > 0) {
+          hiddenPRs = JSON.parse(hiddenPRs);
+        };
 
-        response.json().then(data => {
+        reducedPRs = _(repoData).filter(function(prs) {
+        	return !_(hiddenPRs).contains(prs.id);
+        }, 0);
 
-          window.GitHubNotify.store('repos', repo, data)
-          data.forEach(data => {
+        window.GitHubNotify.store('repos', repo, reducedPRs)
 
-            let comments = [];
-            window.GitHubNotify.request(data.issue_url).then(response => {
+          teamMates = localStorage.getItem('teamMates') || {};
+          myId = localStorage.getItem('myId') || {};
 
-              response.json().then(data => {
+          if (teamMates.length > 0) {
 
-                comments = comments.concat(data);
-                window.GitHubNotify.settings.set('comments', JSON.stringify(comments))
+            myId = myId.split(",");
+            teamMates = teamMates.split(",");
+            list = teamMates.concat(myId);
 
-              }); //comments data response
+            reducedPRs = _(reducedPRs).filter(function(pr) {
+              return _(list).contains(pr.user.login);
+            });
+          };
 
-            }); //comments url request
+        repoData.forEach(prData => {
+          let comments = [];
 
-          }); // comments forEach
+          window.GitHubNotify.request(prData.issue_url).then(response => {
+            response.json().then(issueData => {
 
-        }); //PR url response
+              comments = comments.concat(issueData);
+              window.GitHubNotify.settings.set('comments', JSON.stringify(comments))
 
-      }
+            }); //comments data response
+          }); //comments url request
+        }); // comments forEach
 
+      }); //PR url response
 
-
-      if (status >= 500) {
-        return Promise.reject(new Error('server error'));
-      }
-
-      if (status >= 400) {
-        return Promise.reject(new Error(`client error: ${status} ${response.statusText}`));
-      }
-
+      	console.log(tempCount)
+  return Promise.resolve(11);
 
     }); //PR url request
 
+      	console.log(tempCount)
+  return Promise.resolve(22);
+
   }); //PR forEach
+
+
+
+      	console.log(tempCount)
+  return Promise.resolve(33);
+
+
+
+  // if(tempCount > 0){
+  // return Promise.resolve(tempCount);
+
+  // }
+  // else { 
+  // 	return Promise.reject(new Error('server error'));
+  // }
+
+
 
 }; //gitHubNotifCount
 
 
-
 window.GitHubNotify.store = (key, repo, data) => {
-    var repos, jsonText;
-    repos = JSON.parse(window.GitHubNotify.settings.get('repos')) || {};
-    repos[repo] = data;
+var repos, jsonText;
+repos = window.GitHubNotify.settings.get('repos') || {};
+if (repos.length > 0) {
+  repos = JSON.parse(repos);
+}
+repos[repo] = data;
 
-    jsonText = JSON.stringify(repos);
-    window.GitHubNotify.settings.set(key, jsonText);
-  };
+jsonText = JSON.stringify(repos);
+window.GitHubNotify.settings.set(key, jsonText);
+};
+
 
 })();
