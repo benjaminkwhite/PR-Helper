@@ -225,6 +225,8 @@ Fetcher = (function() {
                   success: function(data) {
 
                     dfds2Comments = dfds2Comments.concat(data);
+
+                    
                     return localStorage.setItem('comments', JSON.stringify(dfds2Comments))
                   },
                   error: function() {

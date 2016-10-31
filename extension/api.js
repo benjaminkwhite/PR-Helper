@@ -161,6 +161,9 @@ console.log(repoData)
 
 
 
+ return {count: prCount, prCount: 11, interval: 60, lastModifed: 'today'};
+
+
 
 		window.tryThis(prData.comments_url).then(response => {
 
@@ -221,7 +224,7 @@ return {count: 123};
 
 window.GitHubNotify.store = (key, repo, data) => {
 var repos, jsonText;
-repos = window.GitHubNotify.settings.get('repos') || {};
+repos = window.GitHubNotify.settings.get(key) || {};
 if (repos.length > 0) {
   repos = JSON.parse(repos);
 }
