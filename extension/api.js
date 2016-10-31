@@ -112,27 +112,25 @@ window.GitHubNotify.buildQuery = options => {
 };
 
 
-let tempCount
 
-window.gitHubNotifCount = () => {
 
-  let repositories = JSON.parse(window.GitHubNotify.settings.get('repositories'));
+window.gitHubNotifCount = (repo) => {
+var prCount, commentCount, hiddenPRs, reducedPRs, teamMates, myId, list;
 
-  repositories.forEach(repo => {
+
     const query = window.GitHubNotify.buildQuery({ perPage: 100 });
     const url = `${window.GitHubNotify.getApiUrl(repo)}?${query.join('&')}`;
 
-    window.GitHubNotify.request(url).then(response => {
-      response.json().then(repoData => {
-      	tempCount = repoData.length
-      	console.log(tempCount)
-
-      	var hiddenPRs, reducedPRs, teamMates, myId, list;
+    return window.GitHubNotify.request(url).then(response => {
+      return response.json().then(repoData => {
+      	prCount = repoData.length
+console.log(repoData)
 
         hiddenPRs = window.GitHubNotify.settings.get('hiddenPRs');
-        if (hiddenPRs.length > 0) {
+        if (hiddenPRs !== undefined && hiddenPRs.length > 0) {
           hiddenPRs = JSON.parse(hiddenPRs);
         };
+
 
         reducedPRs = _(repoData).filter(function(prs) {
         	return !_(hiddenPRs).contains(prs.id);
@@ -154,49 +152,71 @@ window.gitHubNotifCount = () => {
             });
           };
 
+
+
+// var test = window.tryThis(repoData)
+// console.log("test" + test)
+
         repoData.forEach(prData => {
-          let comments = [];
 
-          window.GitHubNotify.request(prData.issue_url).then(response => {
-            response.json().then(issueData => {
 
-              comments = comments.concat(issueData);
-              window.GitHubNotify.settings.set('comments', JSON.stringify(comments))
 
-            }); //comments data response
-          }); //comments url request
+
+		window.tryThis(prData.comments_url).then(response => {
+
+
+			console.log(response.count)
+
+		}).catch(handleError);
+
         }); // comments forEach
+
+
+ return {count: prCount, prCount: 11, interval: 60, lastModifed: 'today'};
+
+
+
+
+
+
 
       }); //PR url response
 
-      	console.log(tempCount)
-  return Promise.resolve(11);
-
     }); //PR url request
-
-      	console.log(tempCount)
-  return Promise.resolve(22);
-
-  }); //PR forEach
-
-
-
-      	console.log(tempCount)
-  return Promise.resolve(33);
-
-
-
-  // if(tempCount > 0){
-  // return Promise.resolve(tempCount);
-
-  // }
-  // else { 
-  // 	return Promise.reject(new Error('server error'));
-  // }
-
 
 
 }; //gitHubNotifCount
+
+
+	window.tryThis = prData => {
+
+          let comments = [];
+          let commentsLength = 0
+
+ console.log(prData)
+
+          return window.GitHubNotify.request(prData).then(response => {
+            return response.json().then(commentsData => {
+
+              // comments = comments.concat(commentsData);
+              // commentsLength = commentsLength + commentsData.length;
+
+//              window.GitHubNotify.settings.set('comments', JSON.stringify(comments))
+return {count: 123};
+
+
+            }); //comments data response
+
+
+          }); //comments url request
+// console.log("commentsLength " + commentsLength)
+
+
+
+
+        
+	};
+
 
 
 window.GitHubNotify.store = (key, repo, data) => {

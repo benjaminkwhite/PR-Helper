@@ -142,13 +142,35 @@
 	}
 
 	function update() {
-		window.gitHubNotifCount().then(response => {
+console.log("update")
 
-			// scheduleAlarm(period);
-			// handleLastModified(lastModifed);
 
-			 render(handleCount(response), [65, 131, 196, 255], 'Notifier for GitHub');
+
+  let repositories = JSON.parse(window.GitHubNotify.settings.get('repositories'));
+
+  repositories.forEach(repo => {
+console.log("forEach")
+		window.gitHubNotifCount(repo).then(response => {
+
+			const count = response.count;
+console.log("count" + count)
+			const prCount = response.prCount;
+console.log("prCount" + prCount)
+			const interval = response.interval;
+			const lastModifed = response.lastModifed;
+			const period = handleInterval(interval);
+
+			scheduleAlarm(period);
+			handleLastModified(lastModifed);
+
+			render(handleCount(count), [65, 131, 196, 255], 'Notifier for GitHub');
 		}).catch(handleError);
+
+
+
+
+  }); //PR forEach
+
 	}
 
 	function openTab(url, tab) {
