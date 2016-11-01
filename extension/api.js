@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 (() => {
   'use strict';
 
@@ -100,6 +102,7 @@
     }
     return tabUrl;
   };
+
   window.GitHubNotify.buildQuery = options => {
     //console.log("buildQuery")
     const perPage = options.perPage;
@@ -113,34 +116,30 @@
 
 
 
-  window.gitHubNotifCount = () => {
+  window.gitHubNotifCount = (repositories) => {
 
     let urls = [];
-    var prCount, currentRepo, hiddenPRs, reducedPRs, teamMates, myId, list;
+    var obj = {};
+    var currentRepo, hiddenPRs, reducedPRs, teamMates, myId, list;
 
+    hiddenPRs = window.GitHubNotify.settings.get('hiddenPRs');
+    if (hiddenPRs !== undefined && hiddenPRs.length > 0) {
+      hiddenPRs = JSON.parse(hiddenPRs);
+    }
+
+    teamMates = localStorage.getItem('teamMates') || {};
+    myId = localStorage.getItem('myId') || {};
 
     const grabContent = url => window.GitHubNotify.request(url)
       .then(res => res.json().then(repoData => {
 
-        prCount = repoData.length
 
-        hiddenPRs = window.GitHubNotify.settings.get('hiddenPRs');
-        if (hiddenPRs !== undefined && hiddenPRs.length > 0) {
-          hiddenPRs = JSON.parse(hiddenPRs);
-        }
-
+        currentRepo = window.GitHubNotify.lookup(repositories, url);
 
         reducedPRs = _(repoData).filter(function(prs) {
           return !_(hiddenPRs).contains(prs.id);
         }, 0);
 
-
-        currentRepo = window.GitHubNotify.lookup(repositories, url)
-
-        window.GitHubNotify.store('repos', currentRepo, reducedPRs)
-
-        teamMates = localStorage.getItem('teamMates') || {};
-        myId = localStorage.getItem('myId') || {};
 
         if (teamMates.length > 0) {
 
@@ -151,58 +150,72 @@
           reducedPRs = _(reducedPRs).filter(function(pr) {
             return _(list).contains(pr.user.login);
           });
-        };
+        }
+
+        obj[(currentRepo).replace(/[-/]/g, "")] = reducedPRs.length;
+
+        window.GitHubNotify.store('repos', currentRepo, reducedPRs);
+
 
         let comments_url = [];
         repoData.forEach(prData => {
           comments_url.push(prData.comments_url);
         }); //PR forEach
 
-        Promise.all(comments_url.map(subGrabContent))
-          .then(() => console.log(`subGrabContent done`))
+        let comments_Data = [];
+        let loopcount = 0;
+        var subGrabContent = tempUrl => window.GitHubNotify.request(tempUrl).then(res => res.json().then(commentsData => {
 
+            comments_Data = comments_Data.concat(commentsData);
 
+            window.GitHubNotify.settings.set('comments', JSON.stringify(comments_Data));
 
+            var mySubArray = _.uniq(window.GitHubNotify.filterBody(commentsData), function(value) {
+              loopcount++;
+            });
 
-//    return {count: prCount, prCount: 11, interval: 60, lastModifed: 'today'};
+            obj[(currentRepo + 'Pending').replace(/[-/]/g, "")] = loopcount;
+
+          }));
+
+        return Promise.all(comments_url.map(subGrabContent)).then(response => {
+          return obj;
+        });
 
       }));
 
 
-    let comments_Data = [];
-    let subGrabContent = tempUrl => window.GitHubNotify.request(tempUrl)
-      .then(res => res.json().then(commentsData => {
-
-        comments_Data = comments_Data.concat(commentsData);
-
-        window.GitHubNotify.settings.set('comments', JSON.stringify(comments_Data));
-
-      }));
-      
-
-    let repositories = JSON.parse(window.GitHubNotify.settings.get('repositories'));
 
     repositories.forEach(repo => {
-      const url = `${window.GitHubNotify.getApiUrl(repo)}`;
+      const query = window.GitHubNotify.buildQuery({ perPage: 100 });
+      const url = `${window.GitHubNotify.getApiUrl(repo)}?${query.join('&')}`;
       urls.push(url);
     }); //PR forEach
 
-    Promise.all(urls.map(grabContent))
-      .then(() => console.log(`grabContent done`))
-
-
+    return Promise.all(urls.map(grabContent)).then(response => {
+      return obj;
+    });
 
   }; //gitHubNotifCount
 
 
 
 
+  window.GitHubNotify.filterBody = function(array) {
+    return _.filter(array, function(pr) {
+      if (escape(pr.body).indexOf("%3Awhite_check_mark%3A") > -1 || escape(pr.body).indexOf("%3Afacepunch%3A") > -1 || escape(pr.body).indexOf("%u2705") > -1) {
+        return true;
+      }
+    });
+  };
+
+
   window.GitHubNotify.lookup = (array, string) => {
-    let passBack
+    let passBack;
     array.some(function(value) {
       if (string.indexOf(value) >= 0) {
-        passBack = value
-      };
+        passBack = value;
+      }
     });
 
     return passBack;

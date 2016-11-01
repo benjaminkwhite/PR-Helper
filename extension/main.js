@@ -144,14 +144,22 @@
 
   function update() {
 
-window.gitHubNotifCount()
+   var repositories = JSON.parse(window.GitHubNotify.settings.get('repositories'));
 
-      // .then(response => {
-      // 	const count = response.count;
-      // 	console.log("count" + count)
 
-    // 	render(handleCount(count), [65, 131, 196, 255], 'Notifier for GitHub');
-    // }).catch(handleError);
+window.gitHubNotifCount(repositories).then(response => {
+      	console.log(response)
+
+        var count = 0
+        var pending = 0
+        repositories.forEach(repo => {
+            count = count + response[(repo).replace(/[-/]/g, "")]
+            pending = pending + response[(repo).replace(/[-/]/g, "")+'Pending']
+        }); //PR forEach
+
+
+    	render(handleCount(count-pending), [65, 131, 196, 255], 'Notifier for GitHub');
+    }).catch(handleError);
 
 
     //   repositories.forEach(repo => {
