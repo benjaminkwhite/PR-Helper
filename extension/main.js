@@ -144,82 +144,17 @@
 
 function update() {
 
+
   let repositories = JSON.parse(window.GitHubNotify.settings.get('repositories'));
-  let urls = [];
-  var prCount, commentCount, hiddenPRs, reducedPRs, teamMates, myId, list;
 
 
-  repositories.forEach(repo => {
-    const url = `${window.GitHubNotify.getApiUrl(repo)}`;
-    urls.push(url);
-  }); //PR forEach
+  window.gitHubNotifCount(repositories)
+  // .then(response => {
+  // 	const count = response.count;
+  // 	console.log("count" + count)
 
-
-  const grabContent = url => window.GitHubNotify.request(url)
-    .then(res => res.json().then(repoData => {
-
-      prCount = repoData.length
-
-      hiddenPRs = window.GitHubNotify.settings.get('hiddenPRs');
-      if (hiddenPRs !== undefined && hiddenPRs.length > 0) {
-        hiddenPRs = JSON.parse(hiddenPRs);
-      }
-
-
-      reducedPRs = _(repoData).filter(function(prs) {
-        return !_(hiddenPRs).contains(prs.id);
-      }, 0);
-
-      // repositories.some(function(value) {
-      //   if ((prData.comments_url).indexOf(value) >= 0) {
-      //     return console.log(value)
-      //   }
-      // });
-
-      window.GitHubNotify.store('repos', 'test', reducedPRs)
-
-      teamMates = localStorage.getItem('teamMates') || {};
-      myId = localStorage.getItem('myId') || {};
-
-      if (teamMates.length > 0) {
-
-        myId = myId.split(",");
-        teamMates = teamMates.split(",");
-        list = teamMates.concat(myId);
-
-        reducedPRs = _(reducedPRs).filter(function(pr) {
-          return _(list).contains(pr.user.login);
-        });
-      };
-
-      let comments_url = [];
-      repoData.forEach(prData => {
-        comments_url.push(prData.comments_url);
-      }); //PR forEach
-
-      Promise.all(comments_url.map(subGrabContent))
-        .then(() => console.log(`subGrabContent done`))
-
-    }));
-
-
-  let comments_Data = [];
-  let subGrabContent = tempUrl => window.GitHubNotify.request(tempUrl)
-    .then(res => res.json().then(commentsData => {
-
-      comments_Data = comments_Data.concat(commentsData);
-
-      window.GitHubNotify.settings.set('comments', JSON.stringify(comments_Data));
-
-    }));
-
-
-
-  Promise.all(urls.map(grabContent))
-    .then(() => console.log(`grabContent done`))
-
-
-
+  // 	render(handleCount(count), [65, 131, 196, 255], 'Notifier for GitHub');
+  // }).catch(handleError);
 
 
   //   repositories.forEach(repo => {
