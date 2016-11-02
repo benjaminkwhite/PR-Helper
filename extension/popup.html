@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <template type="text/html" id="repository-row">
+    <li data-id="{{name}}">
+      <p>
+        <a href="{{git_host}}/{{name}}" target="_blank">{{name}}</a><span class="remove">x</span>
+      </p>
+      <ul class="prs">{{pullRequests}}</ul>
+    </li>
+  </template>
+  <template type="text/html" id="pull-request-row">
+    <li class="pr" data-id="{{id}}">
+      <div class="avatar">
+        <a href="{{user_url}}" target="_blank"><img src="{{user_avatar}}" /></a>
+      </div>
+      <div class="title">
+        <a href="{{html_url}}" target="_blank" class="pr-link">{{title}}</a>
+        <div>{{age}} - {{created_at}} <span class="hide">hide</span></div>
+      </div>
+      <div style="text-align: right;">
+        {{iconString}}
+      </div>
+    </li>
+  </template>
+  <script src="jquery-2.0.3.min.js"></script>
+  <script src="underscore-min.js"></script>
+  <script src="moment.min.js"></script>
+  <script src="listBulider.js"></script>
+</head>
+
+<body>
+  <header>
+    <section>
+      <a href="{{git_host}}" target="_blank"><img src="github-120.png" width="32" height="32" /></a>
+      <h1>PR Helper</h1>
+      <div class="count version"></div>
+    </section>
+  </header>
+  <p class="add-repo">
+    Add <span class="title"></span>?
+    <button class="add">Yes</button>
+  </p>
+  <ul id="repositories"></ul>
+  <p class='empty'>Please add your favorite repositories!</p>
+  <p class='empty'>Just click on this popup under your repo's github page.</p>
+  <div class="welcome spacer">
+    Please go to options to set this tool up!
+    <br/>
+    <br/>
+    <button id="options">Click Here</button>
+  </div>
+</body>
+
+</html>

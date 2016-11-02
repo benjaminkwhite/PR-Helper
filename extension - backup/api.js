@@ -105,6 +105,10 @@
       rootUrl = 'https://github.com/';
     }
 
+    const tabUrl = `${rootUrl}notifications`;
+    if (window.GitHubNotify.settings.get('useParticipatingCount')) {
+      return `${tabUrl}/participating`;
+    }
     return tabUrl;
   };
 
@@ -112,6 +116,9 @@
     //console.log("buildQuery")
     const perPage = options.perPage;
     const query = [`per_page=${perPage}`];
+    if (window.GitHubNotify.settings.get('useParticipatingCount')) {
+      query.push('participating=true');
+    }
     return query;
   };
 
@@ -133,7 +140,7 @@
     myId = localStorage.getItem('myId') || {};
 
 
-    const query = window.GitHubNotify.buildQuery({perPage: 100});
+    const query = window.GitHubNotify.buildQuery({perPage: 1});
     const url = `${window.GitHubNotify.getNotificationsUrl()}?${query.join('&')}`;
 
     window.GitHubNotify.request(url).then(response => {

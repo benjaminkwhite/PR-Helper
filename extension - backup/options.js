@@ -4,12 +4,14 @@
 	document.addEventListener('DOMContentLoaded', () => {
 		const formRootUrl = document.getElementById('root_url');
 		const formOauthToken = document.getElementById('oauth_token');
+		const formUseParticipating = document.getElementById('use_participating');
 		const ghSettingsUrl = document.getElementById('gh_link');
 		const showDesktopNotif = document.getElementById('show_desktop_notif');
 
 		function loadSettings() {
 			formRootUrl.value = GitHubNotify.settings.get('rootUrl');
 			formOauthToken.value = GitHubNotify.settings.get('oauthToken');
+			formUseParticipating.checked = GitHubNotify.settings.get('useParticipatingCount');
 			showDesktopNotif.checked = GitHubNotify.settings.get('showDesktopNotif');
 		}
 
@@ -51,6 +53,11 @@
 
 		formOauthToken.addEventListener('change', () => {
 			GitHubNotify.settings.set('oauthToken', formOauthToken.value);
+			updateBadge();
+		});
+
+		formUseParticipating.addEventListener('change', () => {
+			GitHubNotify.settings.set('useParticipatingCount', formUseParticipating.checked);
 			updateBadge();
 		});
 

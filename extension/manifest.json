@@ -1,35 +1,48 @@
 {
-	"name": "Notifier for GitHub",
-	"version": "2.5.1",
-	"description": "Displays your GitHub notifications unread count",
-	"homepage_url": "https://github.com/sindresorhus/notifier-for-github-chrome",
-	"manifest_version": 2,
-	"minimum_chrome_version": "46",
-	"icons": {
-		"128": "icon-128.png"
-	},
-	"permissions": [
-		"alarms"
-	],
-	"optional_permissions": [
-		"tabs",
-		"notifications"
-	],
-	"background": {
-		"persistent": false,
-		"scripts": [
-			"api.js",
-			"main.js",
-			"underscore-min.js"
-		]
-	},
-	"browser_action": {
-		"default_icon": {
-			"38": "icon-38.png"
-		}
-	},
-	"options_ui": {
-		"page": "options.html",
-		"chrome_style": true
-	}
+   "name": "PR Helper",
+   "description": "Keep track your PRs",
+   "homepage_url": "https://github.com/benjaminkwhite/PR-Helper",
+   "manifest_version": 2,
+   "minimum_chrome_version": "46",
+   "version": "2.6",
+   "icons": {
+      "128": "github-120.png",
+      "16": "github-120.png",
+      "48": "github-120.png"
+   },
+   "content_scripts": [ {
+      "js": [ "addButton.js" ],
+      "matches": [ "<all_urls>"],
+      "run_at": "document_end"
+   } ],
+   "permissions": [
+      "tabs",
+      "alarms",
+      "storage",
+      "notifications"
+   ],
+   "options_page": "options.html",
+   "optional_permissions": [
+      "tabs",
+      "notifications"
+   ],
+   "background": {
+      "persistent": false,
+      "scripts": [
+         "api.js",
+         "main.js",
+         "jquery-2.0.3.min.js",
+         "underscore-min.js"
+      ]
+   },
+   "browser_action": {
+      "default_icon": "github-120.png",
+      "default_popup": "popup.html",
+      "default_title": "PR Helper"
+   },
+   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+   "options_ui": {
+      "page": "options.html",
+      "chrome_style": true
+   }
 }
