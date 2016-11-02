@@ -191,5 +191,91 @@ window.gitHubNotifCount(repositories).then(response => {
     }
   });
 
+
+
+
+
+
+    chrome.runtime.onMessage.addListener(
+      function(request, sender, sendResponse) {
+
+        message = request.message
+        message = message.split(",");
+
+        if (message[0] === "getUrl") {
+          url = localStorage.getItem('githubHost') || {};
+          sendResponse({ lookup: url });
+        }
+
+        if (message[0] === "who") {
+          teamMates = localStorage.getItem('teamMates') || {};
+          if (teamMates.length > 0) {
+            teamMates = teamMates.split(",");
+            found = _(teamMates).contains(message[1]);
+            sendResponse({ lookup: found });
+          } else {
+            sendResponse({ lookup: 'none' });
+          };
+        }
+
+        if (message[0] === "isMe") {
+          myId = localStorage.getItem('myId') || {};
+          if (myId.length > 0) {
+            myId = myId.split(",");
+            found = _(myId).contains(message[1]);
+            sendResponse({ lookup: found });
+          } else {
+            sendResponse({ lookup: 'none' });
+          };
+        }
+
+        if (message[0] === "setMe") {
+          localStorage.setItem('myId', message[1]);
+          sendResponse({ lookup: 'done' });
+        }
+
+        if (message[0] === "setTeamMates") {
+          teamMates = localStorage.getItem('teamMates') || {};
+
+          if (teamMates.length > 0) {
+            teamMates = [teamMates];
+            teamMates.push(message[1]);
+          } else {
+            teamMates = message[1]
+          };
+
+          localStorage.setItem('teamMates', teamMates);
+
+          sendResponse({ lookup: 'done' });
+        }
+
+        if (message[0] === "removeTeamMates") {
+          teamMates = localStorage.getItem('teamMates') || {};
+          teamMates = teamMates.split(",");
+
+          var filtered;
+          filtered = _(teamMates).filter(function(pr) {
+            return !_([message[1]]).contains(pr);
+
+          });
+          localStorage.setItem('teamMates', filtered);
+          sendResponse({ lookup: 'done' });
+        }
+
+      }
+    );
+
+
+
+
+
   update();
+
+
+
+
+
+
+
+
 })();
