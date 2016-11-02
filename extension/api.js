@@ -87,15 +87,6 @@
     return `${rootUrl}api/v3/repos/` + repo + `/pulls`;
   };
 
-  window.GitHubNotify.getNotificationsUrl = () => {
-    const rootUrl = window.GitHubNotify.settings.get('rootUrl');
-
-    if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
-      return 'https://api.github.com/notifications';
-    }
-    return `${rootUrl}api/v3/notifications`;
-  };
-
 
   window.GitHubNotify.getTabUrl = () => {
     //console.log("getTabUrl")
@@ -105,6 +96,10 @@
       rootUrl = 'https://github.com/';
     }
 
+    const tabUrl = `${rootUrl}notifications`;
+    if (window.GitHubNotify.settings.get('useParticipatingCount')) {
+      return `${tabUrl}/participating`;
+    }
     return tabUrl;
   };
 
@@ -112,6 +107,9 @@
     //console.log("buildQuery")
     const perPage = options.perPage;
     const query = [`per_page=${perPage}`];
+    if (window.GitHubNotify.settings.get('useParticipatingCount')) {
+      query.push('participating=true');
+    }
     return query;
   };
 
@@ -132,31 +130,16 @@
     teamMates = localStorage.getItem('teamMates') || {};
     myId = localStorage.getItem('myId') || {};
 
-
-    const query = window.GitHubNotify.buildQuery({perPage: 100});
-    const url = `${window.GitHubNotify.getNotificationsUrl()}?${query.join('&')}`;
-
-    window.GitHubNotify.request(url).then(response => {
-
-      obj['interval'] = Number(response.headers.get('X-Poll-Interval'));
-      obj['lastModifed'] = response.headers.get('Last-Modified');
-
-      return response.json().then(data => {
-        obj['count'] = data.length;
-      });
-    });
-
-
-
-
     const grabContent = url => window.GitHubNotify.request(url)
       .then(res => res.json().then(repoData => {
+
 
         currentRepo = window.GitHubNotify.lookup(repositories, url);
 
         reducedPRs = _(repoData).filter(function(prs) {
           return !_(hiddenPRs).contains(prs.id);
         }, 0);
+
 
         if (teamMates.length > 0) {
 
@@ -204,6 +187,7 @@
 
 
     repositories.forEach(repo => {
+      const query = window.GitHubNotify.buildQuery({ perPage: 100 });
       const url = `${window.GitHubNotify.getApiUrl(repo)}?${query.join('&')}`;
       urls.push(url);
     }); //PR forEach

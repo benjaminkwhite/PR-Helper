@@ -1,18 +1,45 @@
-var GithubMon,
-  bind = function(fn, me) {
-    return function() {
-      return fn.apply(me, arguments);
-    };
-  };
+/*jshint esversion: 6 */
 
-GithubMon = (function() {
-  GithubMon.prototype.repositoryTemplate = null;
-  GithubMon.prototype.pullRequestTemplate = null;
-  GithubMon.prototype.repositoryJSON = null;
-  GithubMon.prototype.repositories = [];
-  GithubMon.prototype.hiddenPRs = [];
-  GithubMon.prototype.myId = [];
-  GithubMon.prototype.teamMates = [];
+(() => {
+  'use strict';
+
+  window.listBuilder = (() => {
+    const defaults = {
+      rootUrl: 'https://api.github.com/',
+      oauthToken: '',
+      useParticipatingCount: false,
+      interval: 60
+    };
+
+    const api = {
+      settings: {
+        get: name => {
+          //console.log("name " + name)
+          const item = localStorage.getItem(name);
+          //console.log("item " + item)
+
+          if (item === null) {
+            return {}.hasOwnProperty.call(defaults, name) ? defaults[name] : undefined;
+          }
+
+          if (item === 'true' || item === 'false') {
+            return item === 'true';
+          }
+
+          return item;
+        },
+        set: localStorage.setItem.bind(localStorage),
+        remove: localStorage.removeItem.bind(localStorage),
+        reset: localStorage.clear.bind(localStorage)
+      }
+    };
+
+    api.defaults = defaults;
+
+    return api;
+  })();
+
+
 
   function badging(text, color, title) {
     chrome.browserAction.setBadgeText({ text });
@@ -20,73 +47,59 @@ GithubMon = (function() {
     chrome.browserAction.setTitle({ title });
   }
 
-  function GithubMon(url) {
-    this.removeRepository = bind(this.removeRepository, this);
-    this.hidePR = bind(this.hidePR, this);
-    this.addCurrentRepo = bind(this.addCurrentRepo, this);
-    this.bindEvents = bind(this.bindEvents, this);
-    this.fetchPullRequests = bind(this.fetchPullRequests, this);
-    this.fetchRepositories = bind(this.fetchRepositories, this);
-    this.url = url.replace(/[\?#].*/, '');
-    _.templateSettings = {
-      interpolate: /\{\{(.+?)\}\}/g
-    };
-    this.repositoryTemplate = $('#repository-row').html();
-    this.pullRequestTemplate = $('#pull-request-row').html();
-    this.accessToken = localStorage.getItem('accessToken');
-    this.githubHost = localStorage.getItem('githubHost') ? localStorage.getItem('githubHost') : 'https://github.com';
-    if (this.accessToken) {
-      this.render();
-    } else {
-      this.renderHelpView();
-    }
-    this.promptAddRepo();
-    this;
-  }
+  const accessToken = window.listBuilder.settings.get('oauthToken');
+  const repositoryTemplate = $('#repository-row').html();
+  const pullRequestTemplate = $('#pull-request-row').html();
 
-  GithubMon.prototype.render = function() {
+  console.log(repositoryTemplate);
+
+  let githubHost = localStorage.getItem('githubHost') ? localStorage.getItem('githubHost') : 'https://github.com';
+
+  var selectedTab, repositories, hiddenPRs, myId, teamMates, repositoryJSON, issue_url, filteredComments, filterBody, color, filtered, face;
+
+
+  window.listBuilder.render = () => {
     chrome.extension.sendMessage({ message: 'refresh' }, function(response) {});
-    this.fetchRepositories();
-    this.fetchPullRequests();
-    this.populateRepoList();
-    return this.bindEvents();
+
+    repositories = JSON.parse(window.listBuilder.settings.get('repositories')) || [];
+
+    hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+    myId = localStorage.getItem('myId') || [];
+    teamMates = localStorage.getItem('teamMates') || [];
+    repositoryJSON = JSON.parse(localStorage.getItem('repos'));
+
+
+    window.listBuilder.populateRepoList();
+    window.listBuilder.bindEvents();
+
+
   };
 
-  GithubMon.prototype.fetchRepositories = function() {
-    return this.repositories = JSON.parse(localStorage.getItem('repositories')) || [];
-  };
 
-  GithubMon.prototype.fetchPullRequests = function() {
-    this.hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
-    this.myId = localStorage.getItem('myId') || [];
-    this.teamMates = localStorage.getItem('teamMates') || [];
-    return this.repositoryJSON = JSON.parse(localStorage.getItem('repos'));
-  };
-
-  GithubMon.prototype.populateRepoList = function() {
+  window.listBuilder.populateRepoList = () => {
     var html = "";
-    if (this.repositories.length > 0) {
+    if (repositories.length > 0) {
       $('.empty').hide();
-      html = _(this.repositoryJSON).map((function(_this) {
+      html = _(repositoryJSON).map((function(_this) {
         return function(pullRequests, repo) {
           var pullRequestsHTML;
 
           pullRequests = _(pullRequests).filter(function(pr) {
-            return !_(_this.hiddenPRs).contains(pr.id);
+            return !_(hiddenPRs).contains(pr.id);
           });
 
-          if (_this.teamMates.length > 0) {
-            filtered = _this.teamMates.split(",");
+          if (teamMates.length > 0) {
+            filtered = teamMates.split(",");
 
-            if (_this.myId.length > 0) {
-              myId = _this.myId.split(",");
+            if (myId.length > 0) {
+              myId = myId.split(",");
               filtered = filtered.concat(myId);
-            };
+            }
 
             pullRequests = _(pullRequests).filter(function(pr) {
               return _(filtered).contains(pr.user.login);
             });
-          };
+          }
 
           if (pullRequests.length > 0) {
 
@@ -108,7 +121,7 @@ GithubMon = (function() {
                   return true;
                 }
               });
-            }
+            };
 
             var mySubArray = _.uniq(filterBody(filteredComments), function(value) {
               return value.issue_url;
@@ -130,7 +143,7 @@ GithubMon = (function() {
 
             pullRequestsHTML = _(pullRequests).map(function(pr) {
 
-              issue_url = pr.issue_url
+              issue_url = pr.issue_url;
 
 
               filtered = _(commentsRequests).filter(function(prc) {
@@ -138,51 +151,51 @@ GithubMon = (function() {
               });
 
 
-              var check = ["%uD83D%uDC4D", "%3Apackage%3A", "%3A+1%3A", "%3Awhite_check_mark%3A", "%u2705", "%3Afacepunch%3A", "%3Arepeat%3A", "%uD83D%uDD01"]
-              var thumbIcon, checkIcon, repeatIcon, message, iconString
+              var check = ["%uD83D%uDC4D", "%3Apackage%3A", "%3A+1%3A", "%3Awhite_check_mark%3A", "%u2705", "%3Afacepunch%3A", "%3Arepeat%3A", "%uD83D%uDD01"];
+              var thumbIcon, checkIcon, repeatIcon, message, iconString;
 
-              thumbIcon = 0
-              checkIcon = 0
-              repeatIcon = 0
-              iconString = ""
+              thumbIcon = 0;
+              checkIcon = 0;
+              repeatIcon = 0;
+              iconString = "";
 
               _(filtered).map(function(prc) {
-                message = escape(prc.body)
+                message = escape(prc.body);
 
                 _(check).map(function(icon) {
                   if (message.indexOf(icon) > -1 && icon == "%uD83D%uDC4D" || message.indexOf(icon) > -1 && icon == "%3A+1%3A") {
-                    thumbIcon++
+                    thumbIcon++;
                     if (thumbIcon < 3) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" alt="" class="icon"/>'
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" alt="" class="icon"/>';
                     }
                   }
                   if (message.indexOf(icon) > -1 && icon == "%3Afacepunch%3A") {
-                    checkIcon++
+                    checkIcon++;
                     if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>';
                     }
                   }
                   if (message.indexOf(icon) > -1 && icon == "%3Awhite_check_mark%3A" || message.indexOf(icon) > -1 && icon == "%u2705") {
-                    checkIcon++
+                    checkIcon++;
                     if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>';
                     }
                   }
                   if (message.indexOf(icon) > -1 && icon == "%3Apackage%3A") {
-                    iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4e6.png" alt="" class="icon"/>'
+                    iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4e6.png" alt="" class="icon"/>';
                   }
                   if (message.indexOf(icon) > -1 && icon == "%3Arepeat%3A" || message.indexOf(icon) > -1 && icon == "%uD83D%uDD01") {
-                    repeatIcon++
-                    thumbIcon = 0
-                    checkIcon = 0
+                    repeatIcon++;
+                    thumbIcon = 0;
+                    checkIcon = 0;
                     if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>'
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>';
                     }
                   }
                 });
               });
 
-              var age = (moment(new Date()).diff(moment.utc(pr.created_at), 'hours'))
+              var age = (moment(new Date()).diff(moment.utc(pr.created_at), 'hours'));
               switch (true) {
                 case (age <= 20):
                   face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f476.png" alt="" class="icon_small"/>';
@@ -229,65 +242,66 @@ GithubMon = (function() {
   };
 
 
-  GithubMon.prototype.bindEvents = function() {
-    $('.hide').on('click', this.hidePR);
-    return $('.remove').on('click', this.removeRepository);
+  window.listBuilder.bindEvents = () => {
+    $('.hide').on('click', window.listBuilder.hidePR);
+    return $('.remove').on('click', window.listBuilder.removeRepository);
   };
 
-  GithubMon.prototype.promptAddRepo = function() {
+  window.listBuilder.promptAddRepo = () => {
     var match, regex, regexExpression;
+
     regexExpression = "^" + this.githubHost + "\\/([\\w-\\.]+\\/[\\w-\\.]+)";
     regex = new RegExp(regexExpression);
-    if (match = this.url.match(regex)) {
-      this.currentRepo = match[1];
-      if (!_(this.repositories).contains(this.currentRepo)) {
-        return this.showPrompt(this.currentRepo);
+    if (match === selectedTab.match(regex)) {
+      let currentRepo = match[1];
+      if (!_(repositories).contains(currentRepo)) {
+        return window.listBuilder.showPrompt(currentRepo);
       }
     } else {
-      return this.hidePrompt();
+      return window.listBuilder.hidePrompt();
     }
   };
 
-  GithubMon.prototype.showPrompt = function(repository) {
+  window.listBuilder.showPrompt = repository => {
     $('.add-repo .title').text(repository);
     $('.add-repo').show();
     return $('.add-repo .add').on('click', this.addCurrentRepo);
   };
 
-  GithubMon.prototype.hidePrompt = function() {
+  window.listBuilder.hidePrompt = function() {
     return $('.add-repo').hide();
   };
 
-  GithubMon.prototype.addCurrentRepo = function() {
-    this.repositories.push(this.currentRepo);
-    localStorage.setItem('repositories', JSON.stringify(this.repositories));
-    return this.hidePrompt();
+  window.listBuilder.addCurrentRepo = () => {
+    repositories.push(currentRepo);
+    localStorage.setItem('repositories', JSON.stringify(repositories));
+    return window.listBuilder.hidePrompt();
   };
 
-  GithubMon.prototype.hidePR = function(event) {
+  window.listBuilder.hidePR = event => {
     var id;
     id = $(event.target).closest('li').data('id');
-    this.hiddenPRs.push(id);
-    localStorage.setItem('hiddenPRs', JSON.stringify(this.hiddenPRs));
-    return this.render();
+    hiddenPRs.push(id);
+    localStorage.setItem('hiddenPRs', JSON.stringify(hiddenPRs));
+    return window.listBuilder.render();
   };
 
-  GithubMon.prototype.removeRepository = function(event) {
+  window.listBuilder.removeRepository = event => {
     var repo;
     repo = $(event.target).closest('li').data('id');
-    this.repositories = _(this.repositories).without(repo);
-    localStorage.setItem('repositories', JSON.stringify(this.repositories));
-    this.repositoryJSON = JSON.parse(localStorage.getItem('repos'));
-    delete this.repositoryJSON[repo];
-    localStorage.setItem('repos', JSON.stringify(this.repositoryJSON));
-    this.promptAddRepo();
+    repositories = _(repositories).without(repo);
+    localStorage.setItem('repositories', JSON.stringify(repositories));
+    repositoryJSON = JSON.parse(localStorage.getItem('repos'));
+    delete repositoryJSON[repo];
+    localStorage.setItem('repos', JSON.stringify(repositoryJSON));
+    window.listBuilder.promptAddRepo();
   };
 
-  GithubMon.prototype.renderHelpView = function() {
+  window.listBuilder.renderHelpView = () => {
     $('.welcome').show();
     return $('#options').on('click', (function(_this) {
       return function() {
-        var optionsUrl = "chrome://extensions/?options=" + chrome.runtime.id
+        var optionsUrl = "chrome://extensions/?options=" + chrome.runtime.id;
         chrome.tabs.query({ url: optionsUrl }, function(tabs) {
           if (tabs.length) {
             chrome.tabs.update(tabs[0].id, { active: true });
@@ -299,14 +313,24 @@ GithubMon = (function() {
     })(this));
   };
 
-  return GithubMon;
+
+
+  chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
+    window.listBuilder.getSelectedTab(tabs[0].url);
+  });
+
+  window.listBuilder.getSelectedTab = url => {
+    selectedTab = url;
+
+    window.listBuilder.promptAddRepo();
+  };
+
+
+  if (accessToken) {
+    window.listBuilder.render();
+  } else {
+    window.listBuilder.renderHelpView();
+  }
+
 
 })();
-
-$(function() {
-  return chrome.tabs.getSelected(null, function(tab) {
-    var mon;
-    return mon = new GithubMon(tab.url);
-  }); //  var mon;
-
-});
