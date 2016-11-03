@@ -14,9 +14,7 @@
     const api = {
       settings: {
         get: name => {
-          //console.log("name " + name)
           const item = localStorage.getItem(name);
-          //console.log("item " + item)
 
           if (item === null) {
             return {}.hasOwnProperty.call(defaults, name) ? defaults[name] : undefined;
@@ -40,7 +38,6 @@
   })();
 
   window.GitHubNotify.requestPermission = permission => {
-    //console.log("requestPermission")
     return new Promise(resolve => {
       chrome.permissions.request({
         permissions: [permission]
@@ -52,7 +49,6 @@
   };
 
   window.GitHubNotify.queryPermission = permission => {
-    //console.log("queryPermission")
     return new Promise(resolve => {
       chrome.permissions.contains({
         permissions: [permission]
@@ -61,7 +57,6 @@
   };
 
   window.GitHubNotify.request = url => {
-    //console.log("request")
     const token = window.GitHubNotify.settings.get('oauthToken');
     if (!token) {
       return Promise.reject(new Error('missing token'));
@@ -78,7 +73,6 @@
   };
 
   window.GitHubNotify.getApiUrl = (repo) => {
-    //console.log("getApiUrl")
     const rootUrl = window.GitHubNotify.settings.get('rootUrl');
 
     if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
@@ -88,8 +82,17 @@
   };
 
 
+  window.GitHubNotify.getNotificationsUrl = () => {
+    const rootUrl = window.GitHubNotify.settings.get('rootUrl');
+
+    if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
+      return 'https://api.github.com/notifications';
+    }
+    return `${rootUrl}api/v3/notifications`;
+  };
+
+
   window.GitHubNotify.getTabUrl = () => {
-    //console.log("getTabUrl")
     let rootUrl = window.GitHubNotify.settings.get('rootUrl');
 
     if (/api.github.com\/$/.test(rootUrl)) {
@@ -104,7 +107,6 @@
   };
 
   window.GitHubNotify.buildQuery = options => {
-    //console.log("buildQuery")
     const perPage = options.perPage;
     const query = [`per_page=${perPage}`];
     if (window.GitHubNotify.settings.get('useParticipatingCount')) {
@@ -120,7 +122,7 @@
 
     let urls = [];
     var obj = {};
-    var currentRepo, hiddenPRs, reducedPRs, teamMates, myId, list;
+    let currentRepo, hiddenPRs, reducedPRs, teamMates, myId, list;
 
     hiddenPRs = window.GitHubNotify.settings.get('hiddenPRs');
     if (hiddenPRs !== undefined && hiddenPRs.length > 0) {
@@ -130,7 +132,7 @@
     teamMates = localStorage.getItem('teamMates') || {};
     myId = localStorage.getItem('myId') || {};
 
-    const query = window.GitHubNotify.buildQuery({perPage: 100});
+    const query = window.GitHubNotify.buildQuery({ perPage: 100 });
     const url = `${window.GitHubNotify.getNotificationsUrl()}?${query.join('&')}`;
 
     window.GitHubNotify.request(url).then(response => {
@@ -138,10 +140,6 @@
       obj['interval'] = Number(response.headers.get('X-Poll-Interval'));
       obj['lastModifed'] = response.headers.get('Last-Modified');
 
-         console.log('interval')
-      return response.json().then(data => {
-        obj['count'] = data.length;
-      });
     });
 
 
@@ -173,7 +171,7 @@
 
 
         let comments_url = [];
-        repoData.forEach(prData => {
+        reducedPRs.forEach(prData => {
           comments_url.push(prData.comments_url);
         }); //PR forEach
 
@@ -181,17 +179,17 @@
         let loopcount = 0;
         var subGrabContent = tempUrl => window.GitHubNotify.request(tempUrl).then(res => res.json().then(commentsData => {
 
-            comments_Data = comments_Data.concat(commentsData);
+          comments_Data = comments_Data.concat(commentsData);
 
-            window.GitHubNotify.settings.set('comments', JSON.stringify(comments_Data));
+          window.GitHubNotify.settings.set('comments', JSON.stringify(comments_Data));
 
-            var mySubArray = _.uniq(window.GitHubNotify.filterBody(commentsData), function(value) {
-              loopcount++;
-            });
+          var mySubArray = _.uniq(window.GitHubNotify.filterBody(commentsData), function(value) {
+            loopcount++;
+          });
 
-            obj[(currentRepo + 'Pending').replace(/[-/]/g, "")] = loopcount;
+          obj[(currentRepo + 'Pending').replace(/[-/]/g, "")] = loopcount;
 
-          }));
+        }));
 
         return Promise.all(comments_url.map(subGrabContent)).then(response => {
           return obj;
@@ -200,17 +198,21 @@
       }));
 
 
+    if (repositories.length > 0) {
+      repositories.forEach(repo => {
+        const query = window.GitHubNotify.buildQuery({ perPage: 100 });
+        const url = `${window.GitHubNotify.getApiUrl(repo)}?${query.join('&')}`;
+        urls.push(url);
+      }); //PR forEach
 
-    repositories.forEach(repo => {
-      const query = window.GitHubNotify.buildQuery({ perPage: 100 });
-      const url = `${window.GitHubNotify.getApiUrl(repo)}?${query.join('&')}`;
-      urls.push(url);
-    }); //PR forEach
+      return Promise.all(urls.map(grabContent)).then(response => {
+        return obj;
+      });
 
-    return Promise.all(urls.map(grabContent)).then(response => {
-      return obj;
-    });
+    } else {
 
+      return Promise.reject(new Error(`no repos`));
+    }
   }; //gitHubNotifCount
 
 

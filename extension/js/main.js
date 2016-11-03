@@ -1,4 +1,6 @@
-(function() {
+/*jshint esversion: 6 */
+
+(() => {
   'use strict';
 
   function render(text, color, title) {
@@ -32,13 +34,13 @@
       const notificationId = `github-notifier-${notification.id}`;
       chrome.notifications.create(notificationId, {
         title: notification.subject.title,
-        iconUrl: 'icon-notif-128.png',
+        iconUrl: 'images/icon-128.png',
         type: 'basic',
         message: notification.repository.full_name,
         contextMessage: getNotificationReasonText(notification.reason)
       });
 
-      //			window.GitHubNotify.settings.set(notificationId, notification.subject.url);
+      //      window.GitHubNotify.settings.set(notificationId, notification.subject.url);
     });
   }
 
@@ -56,8 +58,9 @@
     let lastModifed = window.GitHubNotify.settings.get('lastModifed');
     const emptyLastModified = String(lastModifed) === 'null' || String(lastModifed) === 'undefined';
     lastModifed = emptyLastModified ? new Date(0) : lastModifed;
-
+console.log('test1')
     if (date !== lastModifed) {
+console.log('test2')
       window.GitHubNotify.settings.set('lastModifed', date);
       if (GitHubNotify.settings.get('showDesktopNotif') === true) {
         checkDesktopNotifications(lastModifed);
@@ -90,6 +93,10 @@
         text = 'Missing access token, please create one and enter it in Options';
         symbol = 'X';
         break;
+      case 'no repos':
+        text = 'No selected Repositories';
+        symbol = 'X';
+        break;
       case 'server error':
         text = 'You have to be connected to the internet';
         break;
@@ -101,6 +108,8 @@
         text = 'Unknown error';
         break;
     }
+
+
 
     render(symbol, [166, 41, 41, 255], text);
     scheduleAlarm(1);
@@ -122,27 +131,27 @@
 
   function update() {
 
-   var repositories = JSON.parse(window.GitHubNotify.settings.get('repositories'));
+    var repositories = window.GitHubNotify.settings.get('repositories') ? JSON.parse(window.GitHubNotify.settings.get('repositories')) : '';
 
 
-window.gitHubNotifCount(repositories).then(response => {
-      	console.log(response)
+    window.gitHubNotifCount(repositories).then(response => {
 
-        var totalPR = 0, count = 0, pending = 0
-        repositories.forEach(repo => {
-            count = count + response[(repo).replace(/[-/]/g, "")]
-            pending = pending + response[(repo).replace(/[-/]/g, "")+'Pending']
-            totalPR = (totalPR + (count - pending))
-        }); //PR forEach
+      var totalPR = 0, count = 0, pending = 0;
 
-         const interval = response.interval;
-         const lastModifed = response.lastModifed;
-         const period = handleInterval(interval);
+      repositories.forEach(repo => {
+        count = count + response[(repo).replace(/[-/]/g, "")];
+        pending = pending + response[(repo).replace(/[-/]/g, "") + 'Pending'];
+        totalPR = (totalPR + (count - pending));
+      }); //PR forEach
 
-         scheduleAlarm(period);
-         handleLastModified(lastModifed);
+      const interval = response.interval;
+      const period = handleInterval(interval);
+      const lastModifed = response.lastModifed;
 
-    	render(handleCount(totalPR), [65, 131, 196, 255], 'Notifier for GitHub');
+      scheduleAlarm(period);
+      handleLastModified(lastModifed);
+
+      render(handleCount(totalPR), [65, 131, 196, 255], 'PR Helper');
     }).catch(handleError);
   }
 
@@ -193,88 +202,91 @@ window.gitHubNotifCount(repositories).then(response => {
 
 
 
+  let rootUrl, githubHost, url, myId, teamMates, found;
+
+
+  rootUrl = window.GitHubNotify.settings.get('rootUrl');
+
+  if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
+    githubHost = 'https://api.github.com';
+  } else {
+    githubHost = `${rootUrl}`;
+  }
 
 
 
-    chrome.runtime.onMessage.addListener(
-      function(request, sender, sendResponse) {
+  chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
 
-        var message = request.message
-        message = message.split(",");
+      var message = request.message;
+      message = message.split(",");
 
-        if (message[0] === "getUrl") {
-          url = localStorage.getItem('githubHost') || {};
-          sendResponse({ lookup: url });
-        }
-
-        if (message[0] === "who") {
-          teamMates = localStorage.getItem('teamMates') || {};
-          if (teamMates.length > 0) {
-            teamMates = teamMates.split(",");
-            found = _(teamMates).contains(message[1]);
-            sendResponse({ lookup: found });
-          } else {
-            sendResponse({ lookup: 'none' });
-          };
-        }
-
-        if (message[0] === "isMe") {
-          myId = localStorage.getItem('myId') || {};
-          if (myId.length > 0) {
-            myId = myId.split(",");
-            found = _(myId).contains(message[1]);
-            sendResponse({ lookup: found });
-          } else {
-            sendResponse({ lookup: 'none' });
-          };
-        }
-
-        if (message[0] === "setMe") {
-          localStorage.setItem('myId', message[1]);
-          sendResponse({ lookup: 'done' });
-        }
-
-        if (message[0] === "setTeamMates") {
-          teamMates = localStorage.getItem('teamMates') || {};
-
-          if (teamMates.length > 0) {
-            teamMates = [teamMates];
-            teamMates.push(message[1]);
-          } else {
-            teamMates = message[1]
-          };
-
-          localStorage.setItem('teamMates', teamMates);
-
-          sendResponse({ lookup: 'done' });
-        }
-
-        if (message[0] === "removeTeamMates") {
-          teamMates = localStorage.getItem('teamMates') || {};
-          teamMates = teamMates.split(",");
-
-          var filtered;
-          filtered = _(teamMates).filter(function(pr) {
-            return !_([message[1]]).contains(pr);
-
-          });
-          localStorage.setItem('teamMates', filtered);
-          sendResponse({ lookup: 'done' });
-        }
-
+      if (message[0] === "getUrl") {
+        url = githubHost || {};
+        sendResponse({ lookup: url });
       }
-    );
+
+      if (message[0] === "who") {
+        teamMates = localStorage.getItem('teamMates') || {};
 
 
+        if (teamMates.length > 0) {
+          teamMates = teamMates.split(",");
+          found = _(teamMates).contains(message[1]);
+          sendResponse({ lookup: found });
+        } else {
+          sendResponse({ lookup: 'none' });
+        }
+      }
 
+      if (message[0] === "isMe") {
+        myId = localStorage.getItem('myId') || {};
+        if (myId.length > 0) {
+          myId = myId.split(",");
+          found = _(myId).contains(message[1]);
+          sendResponse({ lookup: found });
+        } else {
+          sendResponse({ lookup: 'none' });
+        }
+      }
 
+      if (message[0] === "setMe") {
+        localStorage.setItem('myId', message[1]);
+        sendResponse({ lookup: 'done' });
+      }
+
+      if (message[0] === "setTeamMates") {
+        teamMates = localStorage.getItem('teamMates') || {};
+
+        if (teamMates.length > 0) {
+          teamMates = [teamMates];
+          teamMates.push(message[1]);
+        } else {
+          teamMates = message[1];
+        }
+
+        localStorage.setItem('teamMates', teamMates);
+
+        sendResponse({ lookup: 'done' });
+      }
+
+      if (message[0] === "removeTeamMates") {
+        teamMates = localStorage.getItem('teamMates') || {};
+        teamMates = teamMates.split(",");
+
+        var filtered;
+        filtered = _(teamMates).filter(function(pr) {
+          return !_([message[1]]).contains(pr);
+
+        });
+        localStorage.setItem('teamMates', filtered);
+        sendResponse({ lookup: 'done' });
+      }
+
+    }
+  );
 
   update();
-
-
-
-
-
 
 
 

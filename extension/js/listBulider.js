@@ -14,9 +14,7 @@
     const api = {
       settings: {
         get: name => {
-          //console.log("name " + name)
           const item = localStorage.getItem(name);
-          //console.log("item " + item)
 
           if (item === null) {
             return {}.hasOwnProperty.call(defaults, name) ? defaults[name] : undefined;
@@ -41,32 +39,64 @@
 
 
 
-  function badging(text, color, title) {
-    chrome.browserAction.setBadgeText({ text });
-    chrome.browserAction.setBadgeBackgroundColor({ color });
-    chrome.browserAction.setTitle({ title });
-  }
 
-  let githubHost, selectedTab, hiddenPRs, myId, teamMates, repositoryJSON, issue_url, filteredComments, filterBody, color, filtered, face, currentRepo;
+  chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
+    window.listBuilder.getSelectedTab(tabs[0].url);
+  });
 
-  const accessToken = window.listBuilder.settings.get('oauthToken');
-  const repositoryTemplate = $('#repository-row').html();
-  const pullRequestTemplate = $('#pull-request-row').html();
+  let selectedTab, hiddenPRs, myId, teamMates, repositoryJSON, accessToken, repositoryTemplate, pullRequestTemplate, repositories, rootUrl, githubHost, issue_url, filtered, currentRepo;
 
-  let repositories = window.listBuilder.settings.get('repositories') ? JSON.parse(window.listBuilder.settings.get('repositories')) : '';
+  window.listBuilder.getSelectedTab = url => {
+    selectedTab = url;
+
+    hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+    myId = localStorage.getItem('myId') || [];
+    teamMates = localStorage.getItem('teamMates') || [];
+    repositoryJSON = JSON.parse(localStorage.getItem('repos'));
+
+
+    accessToken = window.listBuilder.settings.get('oauthToken');
+    repositoryTemplate = $('#repository-row').html();
+    pullRequestTemplate = $('#pull-request-row').html();
+
+
+    repositories = window.listBuilder.settings.get('repositories') ? JSON.parse(window.listBuilder.settings.get('repositories')) : [];
 
     _.templateSettings = {
       interpolate: /\{\{(.+?)\}\}/g
     };
 
-    const rootUrl = window.listBuilder.settings.get('rootUrl');
+    rootUrl = window.listBuilder.settings.get('rootUrl');
 
     if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
       githubHost = 'https://api.github.com';
+    } else {
+      githubHost = `${rootUrl}`;
     }
-    else{
-      githubHost = `${rootUrl}api/v3`;
+
+    if (accessToken) {
+      window.listBuilder.promptAddRepo();
+      window.listBuilder.populateRepoList();
+      window.listBuilder.bindEvents();
+    } else {
+      window.listBuilder.renderHelpView();
     }
+
+
+
+  };
+
+
+
+
+
+
+  function render(text, color, title) {
+    chrome.browserAction.setBadgeText({ text });
+    chrome.browserAction.setBadgeBackgroundColor({ color });
+    chrome.browserAction.setTitle({ title });
+  }
+
 
 
   window.listBuilder.populateRepoList = () => {
@@ -100,13 +130,13 @@
 
             var commentsRequests = JSON.parse(localStorage.getItem('comments'));
 
-            issue_url = _.pluck(pullRequests, 'issue_url');
+            let issue_url = _.pluck(pullRequests, 'issue_url');
 
-            filteredComments = _(commentsRequests).filter(function(pr) {
+            let filteredComments = _(commentsRequests).filter(function(pr) {
               return _(issue_url).contains(pr.issue_url);
             });
 
-            filterBody = function(array) {
+            let filterBody = function(array) {
               return _.filter(array, function(pr) {
                 if (escape(pr.body).indexOf("%3Awhite_check_mark%3A") > -1 || escape(pr.body).indexOf("%3Afacepunch%3A") > -1 || escape(pr.body).indexOf("%u2705") > -1) {
                   return true;
@@ -122,16 +152,10 @@
             var pending = mySubArray.length;
 
 
-
-
             $('.version').html('Active <strong>' + (pullRequests.length - pending) + '</strong><br>Pending <strong>' + pending + '</strong>');
 
-            color = '#3D7ADD';
-            if ((pullRequests.length - pending) > 7) {
-              color = '#ff0000';
-            }
 
-            badging((pullRequests.length - pending).toString(), color, 'PR Helper');
+            render((pullRequests.length - pending).toString(), [65, 131, 196, 255], 'PR Helper');
 
             pullRequestsHTML = _(pullRequests).map(function(pr) {
 
@@ -158,48 +182,49 @@
                   if (message.indexOf(icon) > -1 && icon == "%uD83D%uDC4D" || message.indexOf(icon) > -1 && icon == "%3A+1%3A") {
                     thumbIcon++;
                     if (thumbIcon < 3) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" alt="" class="icon"/>';
+                      iconString = iconString + '<img src="images/1f44d.png" alt="" class="icon"/>';
                     }
                   }
                   if (message.indexOf(icon) > -1 && icon == "%3Afacepunch%3A") {
                     checkIcon++;
                     if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>';
+                      iconString = iconString + '<img src="images/1f44a.png" alt="" class="icon"/>';
                     }
                   }
                   if (message.indexOf(icon) > -1 && icon == "%3Awhite_check_mark%3A" || message.indexOf(icon) > -1 && icon == "%u2705") {
                     checkIcon++;
                     if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>';
+                      iconString = iconString + '<img src="images/2705.png" alt="" class="icon"/>';
                     }
                   }
                   if (message.indexOf(icon) > -1 && icon == "%3Apackage%3A") {
-                    iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4e6.png" alt="" class="icon"/>';
+                    iconString = iconString + '<img src="images/1f4e6.png" alt="" class="icon"/>';
                   }
                   if (message.indexOf(icon) > -1 && icon == "%3Arepeat%3A" || message.indexOf(icon) > -1 && icon == "%uD83D%uDD01") {
                     repeatIcon++;
                     thumbIcon = 0;
                     checkIcon = 0;
                     if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>';
+                      iconString = iconString + '<img src="images/1f501.png" alt="" class="icon"/>';
                     }
                   }
                 });
               });
 
               var age = (moment(new Date()).diff(moment.utc(pr.created_at), 'hours'));
+              var face;
               switch (true) {
                 case (age <= 20):
-                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f476.png" alt="" class="icon_small"/>';
+                  face = '<img src="images/1f476.png" alt="" class="icon_small"/>';
                   break;
                 case (age <= 34):
-                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f466.png" alt="" class="icon_small"/>';
+                  face = '<img src="images/1f466.png" alt="" class="icon_small"/>';
                   break;
                 case (age <= 59):
-                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f468.png" alt="" class="icon_small"/>';
+                  face = '<img src="images/1f468.png" alt="" class="icon_small"/>';
                   break;
                 default:
-                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f474.png" alt="" class="icon_small"/>';
+                  face = '<img src="images/1f474.png" alt="" class="icon_small"/>';
                   break;
               }
 
@@ -210,7 +235,6 @@
                 user: pr.user.login,
                 user_avatar: pr.user.avatar_url,
                 user_url: pr.user.html_url,
-                git_host: githubHost,
                 iconString: iconString,
                 age: face,
                 created_at: moment.utc(pr.created_at).fromNow()
@@ -228,7 +252,6 @@
         };
       })(this));
 
-
       return $('#repositories').html(html.join(''));
     } else {
       return $('.empty').show();
@@ -242,9 +265,11 @@
   };
 
   window.listBuilder.promptAddRepo = () => {
-    var match, regex, regexExpression;
+    var match, regex, regexExpression, tempHost;
 
-    regexExpression = "^" + githubHost + "\\/([\\w-\\.]+\\/[\\w-\\.]+)";
+    tempHost = githubHost.replace(/[/]/g, "\\/");
+
+    regexExpression = "^" + tempHost + "([\\w-\\.]+\\/[\\w-\\.]+)";
     regex = new RegExp(regexExpression);
 
     if (match = selectedTab.match(regex)) {
@@ -279,7 +304,6 @@
     id = $(event.target).closest('li').data('id');
     hiddenPRs.push(id);
     localStorage.setItem('hiddenPRs', JSON.stringify(hiddenPRs));
-    return window.listBuilder.render();
   };
 
   window.listBuilder.removeRepository = event => {
@@ -308,34 +332,6 @@
       };
     })(this));
   };
-
-
-
-  chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
-    window.listBuilder.getSelectedTab(tabs[0].url);
-  });
-
-  window.listBuilder.getSelectedTab = url => {
-    selectedTab = url;
-
-    hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
-    myId = localStorage.getItem('myId') || [];
-    teamMates = localStorage.getItem('teamMates') || [];
-    repositoryJSON = JSON.parse(localStorage.getItem('repos'));
-
-
-  if (accessToken) {
-    window.listBuilder.promptAddRepo();
-    window.listBuilder.populateRepoList();
-    window.listBuilder.bindEvents();
-  } else {
-    window.listBuilder.renderHelpView();
-  }
-
-
-
-  };
-
 
 
 

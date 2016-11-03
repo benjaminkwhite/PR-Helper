@@ -4,7 +4,6 @@
 
 
 
-
     if (/^https?\:\/\/github.*\/.*/.test(loc)) {
       sendMessage('getUrl');
     }
@@ -17,7 +16,7 @@
         var prRemove = document.getElementById("prRemove");
         var prAdd = document.getElementById("prAdd");
 
-        if (request[0] === "getUrl" && response.lookup === loc.substring(0, loc.lastIndexOf("/"))) {
+        if (request[0] === "getUrl" && response.lookup === loc.substring(0, loc.lastIndexOf("/")+1)) {
           window.setTimeout(function() { doAddButton(); }, 1000);
         }
 
