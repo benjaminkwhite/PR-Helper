@@ -38,6 +38,7 @@
   })();
 
 
+chrome.extension.sendMessage({ message: 'refresh' }, function(response) {});
 
 
   chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
@@ -303,6 +304,7 @@
     var id;
     id = $(event.target).closest('li').data('id');
     hiddenPRs.push(id);
+    $(event.target).closest('li').hide();
     localStorage.setItem('hiddenPRs', JSON.stringify(hiddenPRs));
   };
 
@@ -313,6 +315,7 @@
     localStorage.setItem('repositories', JSON.stringify(repositories));
     repositoryJSON = JSON.parse(localStorage.getItem('repos'));
     delete repositoryJSON[repo];
+    $(event.target).closest('li').hide();
     localStorage.setItem('repos', JSON.stringify(repositoryJSON));
     window.listBuilder.promptAddRepo();
   };

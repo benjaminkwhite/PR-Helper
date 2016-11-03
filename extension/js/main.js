@@ -40,7 +40,7 @@
         contextMessage: getNotificationReasonText(notification.reason)
       });
 
-      //      window.GitHubNotify.settings.set(notificationId, notification.subject.url);
+      window.GitHubNotify.settings.set(notificationId, notification.subject.url);
     });
   }
 
@@ -54,13 +54,28 @@
   }
 
 
+  function handleNotificationClicked(notificationId) {
+    const url = window.GitHubNotify.settings.get(notificationId);
+    if (url) {
+      window.GitHubNotify.request(url).then(res => res.json()).then(json => {
+        const tabUrl = json.message === 'Not Found' ? window.GitHubNotify.getTabUrl() : json.html_url;
+        openTab(tabUrl);
+      }).catch(() => {
+        openTab(window.GitHubNotify.getTabUrl());
+      });
+    }
+    chrome.notifications.clear(notificationId);
+  }
+
+  function handleNotificationClosed(notificationId) {
+    window.GitHubNotify.settings.remove(notificationId);
+  }
+
   function handleLastModified(date) {
     let lastModifed = window.GitHubNotify.settings.get('lastModifed');
     const emptyLastModified = String(lastModifed) === 'null' || String(lastModifed) === 'undefined';
     lastModifed = emptyLastModified ? new Date(0) : lastModifed;
-console.log('test1')
     if (date !== lastModifed) {
-console.log('test2')
       window.GitHubNotify.settings.set('lastModifed', date);
       if (GitHubNotify.settings.get('showDesktopNotif') === true) {
         checkDesktopNotifications(lastModifed);
@@ -131,10 +146,29 @@ console.log('test2')
 
   function update() {
 
+    window.gitHubNotifCount().then(response => {
+
+      var pending = 0;
+
+      const interval = response.interval;
+      const period = handleInterval(interval);
+      const lastModifed = response.lastModifed;
+
+      scheduleAlarm(period);
+      handleLastModified(lastModifed);
+
+    }).catch(handleError);
+
+    updatecomments()
+  }
+
+
+
+  function updatecomments() {
+
     var repositories = window.GitHubNotify.settings.get('repositories') ? JSON.parse(window.GitHubNotify.settings.get('repositories')) : '';
 
-
-    window.gitHubNotifCount(repositories).then(response => {
+    window.gitHubCommentsCount(repositories).then(response => {
 
       var totalPR = 0, count = 0, pending = 0;
 
@@ -144,16 +178,11 @@ console.log('test2')
         totalPR = (totalPR + (count - pending));
       }); //PR forEach
 
-      const interval = response.interval;
-      const period = handleInterval(interval);
-      const lastModifed = response.lastModifed;
-
-      scheduleAlarm(period);
-      handleLastModified(lastModifed);
-
       render(handleCount(totalPR), [65, 131, 196, 255], 'PR Helper');
     }).catch(handleError);
   }
+
+
 
   function openTab(url, tab) {
     window.GitHubNotify.queryPermission('tabs').then(granted => {
@@ -178,6 +207,14 @@ console.log('test2')
   chrome.alarms.create({ when: Date.now() + 2000 });
   chrome.alarms.onAlarm.addListener(update);
   chrome.runtime.onMessage.addListener(update);
+
+
+  window.GitHubNotify.queryPermission('notifications').then(granted => {
+    if (granted) {
+      chrome.notifications.onClicked.addListener(handleNotificationClicked);
+      chrome.notifications.onClosed.addListener(handleNotificationClosed);
+    }
+  });
 
   // launch options page on first run
   chrome.runtime.onInstalled.addListener(details => {
@@ -282,6 +319,11 @@ console.log('test2')
         localStorage.setItem('teamMates', filtered);
         sendResponse({ lookup: 'done' });
       }
+
+        if (message[0] === "refresh") {
+          updatecomments();
+          sendResponse({ lookup: 'ok' });
+        }
 
     }
   );

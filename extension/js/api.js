@@ -117,8 +117,43 @@
 
 
 
+  window.gitHubNotifCount = () => {
+    const query = window.GitHubNotify.buildQuery({perPage: 1});
+    const url = `${window.GitHubNotify.getNotificationsUrl()}?${query.join('&')}`;
 
-  window.gitHubNotifCount = (repositories) => {
+    return window.GitHubNotify.request(url).then(response => {
+      const status = response.status;
+      const interval = Number(response.headers.get('X-Poll-Interval'));
+      const lastModifed = response.headers.get('Last-Modified');
+
+      const linkheader = response.headers.get('Link');
+
+      if (linkheader === null) {
+        return response.json().then(data => {
+          return {interval, lastModifed};
+        });
+      }
+
+      const lastlink = linkheader.split(', ').find(link => {
+        return link.endsWith('rel="last"');
+      });
+      const count = Number(lastlink.slice(lastlink.lastIndexOf('page=') + 5, lastlink.lastIndexOf('>')));
+
+      if (status >= 500) {
+        return Promise.reject(new Error('server error'));
+      }
+
+      if (status >= 400) {
+        return Promise.reject(new Error(`client error: ${status} ${response.statusText}`));
+      }
+
+      return {interval, lastModifed};
+    });
+  };
+
+
+
+  window.gitHubCommentsCount = (repositories) => {
 
     let urls = [];
     var obj = {};
@@ -131,17 +166,6 @@
 
     teamMates = localStorage.getItem('teamMates') || {};
     myId = localStorage.getItem('myId') || {};
-
-    const query = window.GitHubNotify.buildQuery({ perPage: 100 });
-    const url = `${window.GitHubNotify.getNotificationsUrl()}?${query.join('&')}`;
-
-    window.GitHubNotify.request(url).then(response => {
-
-      obj['interval'] = Number(response.headers.get('X-Poll-Interval'));
-      obj['lastModifed'] = response.headers.get('Last-Modified');
-
-    });
-
 
     const grabContent = url => window.GitHubNotify.request(url)
       .then(res => res.json().then(repoData => {
@@ -214,6 +238,7 @@
       return Promise.reject(new Error(`no repos`));
     }
   }; //gitHubNotifCount
+
 
 
 

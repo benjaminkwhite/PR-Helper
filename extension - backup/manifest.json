@@ -19,8 +19,7 @@
 		"persistent": false,
 		"scripts": [
 			"api.js",
-			"main.js",
-			"underscore-min.js"
+			"main.js"
 		]
 	},
 	"browser_action": {
