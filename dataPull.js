@@ -279,23 +279,3 @@ setInterval(function() {
     }
   });
 
-
-
-var cakeNotification = "cake-notification"
-
-var CAKE_INTERVAL = .5;
-
-chrome.alarms.create("", {periodInMinutes: CAKE_INTERVAL});
-
-chrome.alarms.onAlarm.addListener(function(alarm) {
-  chrome.notifications.create(cakeNotification, {
-    "type": "basic",
-    "iconUrl": chrome.extension.getURL("icon-128.png"),
-    "title": "Time for cake!",
-    "message": "Something something cake"
-  });
-});
-
-chrome.browserAction.onClicked.addListener(function () {
-  chrome.notifications.clear(cakeNotification);
-});

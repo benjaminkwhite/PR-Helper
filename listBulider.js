@@ -65,8 +65,12 @@ GithubMon = (function() {
 
   GithubMon.prototype.populateRepoList = function() {
     var html = "";
+
+console.log(this.repositories.length)
     if (this.repositories.length > 0) {
       $('.empty').hide();
+
+console.log(this.repositoryJSON)
       html = _(this.repositoryJSON).map((function(_this) {
         return function(pullRequests, repo) {
           var pullRequestsHTML;
@@ -74,6 +78,7 @@ GithubMon = (function() {
           pullRequests = _(pullRequests).filter(function(pr) {
             return !_(_this.hiddenPRs).contains(pr.id);
           });
+console.log(pullRequests)
 
           if (_this.teamMates.length > 0) {
             filtered = _this.teamMates.split(",");
@@ -88,10 +93,8 @@ GithubMon = (function() {
             });
           };
 
+console.log(pullRequests.length)
           if (pullRequests.length > 0) {
-
-
-
 
             var commentsRequests = JSON.parse(localStorage.getItem('comments'));
 
@@ -198,6 +201,8 @@ GithubMon = (function() {
                   break;
               }
 
+console.log(pr.id)
+console.log(_this.pullRequestTemplate)
               return _.template(_this.pullRequestTemplate, {
                 id: pr.id,
                 title: pr.title,
@@ -214,6 +219,7 @@ GithubMon = (function() {
           } else {
             pullRequestsHTML = ["<li><p>No PR's</p></li>"];
           }
+console.log(_this.repositoryTemplate)
           return _.template(_this.repositoryTemplate, {
             name: repo,
             git_host: _this.githubHost,
@@ -221,6 +227,8 @@ GithubMon = (function() {
           });
         };
       })(this));
+
+console.log(html.join(''))
 
       return $('#repositories').html(html.join(''));
     } else {

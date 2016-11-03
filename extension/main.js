@@ -199,7 +199,7 @@ window.gitHubNotifCount(repositories).then(response => {
     chrome.runtime.onMessage.addListener(
       function(request, sender, sendResponse) {
 
-        message = request.message
+        var message = request.message
         message = message.split(",");
 
         if (message[0] === "getUrl") {

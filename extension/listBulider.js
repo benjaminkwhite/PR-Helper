@@ -47,39 +47,34 @@
     chrome.browserAction.setTitle({ title });
   }
 
+  let githubHost, selectedTab, hiddenPRs, myId, teamMates, repositoryJSON, issue_url, filteredComments, filterBody, color, filtered, face, currentRepo;
+
   const accessToken = window.listBuilder.settings.get('oauthToken');
   const repositoryTemplate = $('#repository-row').html();
   const pullRequestTemplate = $('#pull-request-row').html();
 
-  console.log(repositoryTemplate);
+  let repositories = window.listBuilder.settings.get('repositories') ? JSON.parse(window.listBuilder.settings.get('repositories')) : '';
 
-  let githubHost = localStorage.getItem('githubHost') ? localStorage.getItem('githubHost') : 'https://github.com';
+    _.templateSettings = {
+      interpolate: /\{\{(.+?)\}\}/g
+    };
 
-  var selectedTab, repositories, hiddenPRs, myId, teamMates, repositoryJSON, issue_url, filteredComments, filterBody, color, filtered, face;
+    const rootUrl = window.listBuilder.settings.get('rootUrl');
 
-
-  window.listBuilder.render = () => {
-    chrome.extension.sendMessage({ message: 'refresh' }, function(response) {});
-
-    repositories = JSON.parse(window.listBuilder.settings.get('repositories')) || [];
-
-    hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
-    myId = localStorage.getItem('myId') || [];
-    teamMates = localStorage.getItem('teamMates') || [];
-    repositoryJSON = JSON.parse(localStorage.getItem('repos'));
-
-
-    window.listBuilder.populateRepoList();
-    window.listBuilder.bindEvents();
-
-
-  };
+    if (/(^(https:\/\/)?(api\.)?github\.com)/.test(rootUrl)) {
+      githubHost = 'https://api.github.com';
+    }
+    else{
+      githubHost = `${rootUrl}api/v3`;
+    }
 
 
   window.listBuilder.populateRepoList = () => {
     var html = "";
+
     if (repositories.length > 0) {
       $('.empty').hide();
+
       html = _(repositoryJSON).map((function(_this) {
         return function(pullRequests, repo) {
           var pullRequestsHTML;
@@ -103,11 +98,7 @@
 
           if (pullRequests.length > 0) {
 
-
-
-
             var commentsRequests = JSON.parse(localStorage.getItem('comments'));
-
 
             issue_url = _.pluck(pullRequests, 'issue_url');
 
@@ -129,6 +120,7 @@
 
 
             var pending = mySubArray.length;
+
 
 
 
@@ -211,14 +203,14 @@
                   break;
               }
 
-              return _.template(_this.pullRequestTemplate, {
+              return _.template(pullRequestTemplate, {
                 id: pr.id,
                 title: pr.title,
                 html_url: pr.html_url,
                 user: pr.user.login,
                 user_avatar: pr.user.avatar_url,
                 user_url: pr.user.html_url,
-                git_host: _this.githubHost,
+                git_host: githubHost,
                 iconString: iconString,
                 age: face,
                 created_at: moment.utc(pr.created_at).fromNow()
@@ -227,13 +219,15 @@
           } else {
             pullRequestsHTML = ["<li><p>No PR's</p></li>"];
           }
-          return _.template(_this.repositoryTemplate, {
+
+          return _.template(repositoryTemplate, {
             name: repo,
-            git_host: _this.githubHost,
+            git_host: githubHost,
             pullRequests: pullRequestsHTML.join('')
           });
         };
       })(this));
+
 
       return $('#repositories').html(html.join(''));
     } else {
@@ -250,10 +244,12 @@
   window.listBuilder.promptAddRepo = () => {
     var match, regex, regexExpression;
 
-    regexExpression = "^" + this.githubHost + "\\/([\\w-\\.]+\\/[\\w-\\.]+)";
+    regexExpression = "^" + githubHost + "\\/([\\w-\\.]+\\/[\\w-\\.]+)";
     regex = new RegExp(regexExpression);
-    if (match === selectedTab.match(regex)) {
-      let currentRepo = match[1];
+
+    if (match = selectedTab.match(regex)) {
+      currentRepo = match[1];
+
       if (!_(repositories).contains(currentRepo)) {
         return window.listBuilder.showPrompt(currentRepo);
       }
@@ -265,7 +261,7 @@
   window.listBuilder.showPrompt = repository => {
     $('.add-repo .title').text(repository);
     $('.add-repo').show();
-    return $('.add-repo .add').on('click', this.addCurrentRepo);
+    return $('.add-repo .add').on('click', window.listBuilder.addCurrentRepo);
   };
 
   window.listBuilder.hidePrompt = function() {
@@ -322,15 +318,25 @@
   window.listBuilder.getSelectedTab = url => {
     selectedTab = url;
 
-    window.listBuilder.promptAddRepo();
-  };
+    hiddenPRs = JSON.parse(localStorage.getItem('hiddenPRs')) || [];
+    myId = localStorage.getItem('myId') || [];
+    teamMates = localStorage.getItem('teamMates') || [];
+    repositoryJSON = JSON.parse(localStorage.getItem('repos'));
 
 
   if (accessToken) {
-    window.listBuilder.render();
+    window.listBuilder.promptAddRepo();
+    window.listBuilder.populateRepoList();
+    window.listBuilder.bindEvents();
   } else {
     window.listBuilder.renderHelpView();
   }
+
+
+
+  };
+
+
 
 
 })();
