@@ -11,6 +11,9 @@
 			formRootUrl.value = GitHubNotify.settings.get('rootUrl');
 			formOauthToken.value = GitHubNotify.settings.get('oauthToken');
 			showDesktopNotif.checked = GitHubNotify.settings.get('showDesktopNotif');
+
+			ghSettingsUrl.href = `${normalizeRoot(formRootUrl.value)}settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension`;
+
 		}
 
 		loadSettings();
@@ -35,7 +38,7 @@
 		formRootUrl.addEventListener('change', () => {
 			let url = normalizeRoot(formRootUrl.value);
 
-			const urlSettings = `${normalizeRoot(formRootUrl.value)}settings/tokens/new?scopes=notifications`;
+			const urlSettings = `${normalizeRoot(formRootUrl.value)}settings/tokens/new?scopes=notifications&description=PR Helper Chrome extension`;
 
 			// case of url is empty: set to default
 			if (url === normalizeRoot('')) {
