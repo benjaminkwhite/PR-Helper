@@ -90,28 +90,55 @@ GithubMon = (function() {
 
           if (pullRequests.length > 0) {
 
-            pullLength = pullRequests.length
-            $('.version').text(pullLength);
+
+
+
+            var commentsRequests = JSON.parse(localStorage.getItem('comments'));
+
+
+            issue_url = _.pluck(pullRequests, 'issue_url');
+
+            filteredComments = _(commentsRequests).filter(function(pr) {
+              return _(issue_url).contains(pr.issue_url);
+            });
+
+            filterBody = function(array) {
+              return _.filter(array, function(pr) {
+                if (escape(pr.body).indexOf("%3Awhite_check_mark%3A") > -1 || escape(pr.body).indexOf("%3Afacepunch%3A") > -1 || escape(pr.body).indexOf("%u2705") > -1) {
+                  return true;
+                }
+              });
+            }
+
+            var mySubArray = _.uniq(filterBody(filteredComments), function(value) {
+              return value.issue_url;
+            });
+
+
+            var pending = mySubArray.length;
+
+
+
+            $('.version').html('Active <strong>' + (pullRequests.length - pending) + '</strong><br>Pending <strong>' + pending + '</strong>');
 
             color = '#3D7ADD';
-            if (pullLength > 7) {
+            if ((pullRequests.length - pending) > 7) {
               color = '#ff0000';
             }
 
-            badging(pullLength.toString(), color, 'PR Helper');
+            badging((pullRequests.length - pending).toString(), color, 'PR Helper');
 
             pullRequestsHTML = _(pullRequests).map(function(pr) {
 
               issue_url = pr.issue_url
 
-              commentsRequests = JSON.parse(localStorage.getItem('comments'));
 
               filtered = _(commentsRequests).filter(function(prc) {
                 return _([prc.issue_url]).contains(issue_url);
               });
 
 
-              var check = ["%uD83D%uDC4D", "%3A+1%3A", "%3Awhite_check_mark%3A", "%u2705", "%3Arepeat%3A", "%uD83D%uDD01"]
+              var check = ["%uD83D%uDC4D", "%3Apackage%3A", "%3A+1%3A", "%3Awhite_check_mark%3A", "%u2705", "%3Afacepunch%3A", "%3Arepeat%3A", "%uD83D%uDD01"]
               var thumbIcon, checkIcon, repeatIcon, message, iconString
 
               thumbIcon = 0
@@ -129,36 +156,45 @@ GithubMon = (function() {
                       iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" alt="" class="icon"/>'
                     }
                   }
+                  if (message.indexOf(icon) > -1 && icon == "%3Afacepunch%3A") {
+                    checkIcon++
+                    if (checkIcon < 2) {
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
+                    }
+                  }
                   if (message.indexOf(icon) > -1 && icon == "%3Awhite_check_mark%3A" || message.indexOf(icon) > -1 && icon == "%u2705") {
                     checkIcon++
                     if (checkIcon < 2) {
                       iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/2705.png" alt="" class="icon"/>'
                     }
                   }
+                  if (message.indexOf(icon) > -1 && icon == "%3Apackage%3A") {
+                    iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4e6.png" alt="" class="icon"/>'
+                  }
                   if (message.indexOf(icon) > -1 && icon == "%3Arepeat%3A" || message.indexOf(icon) > -1 && icon == "%uD83D%uDD01") {
                     repeatIcon++
                     thumbIcon = 0
                     checkIcon = 0
                     if (checkIcon < 2) {
-                      iconString = iconString + '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>'
+                      iconString = iconString + '<img src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f501.png" alt="" class="icon"/>'
                     }
                   }
                 });
               });
 
-              var age = (moment(new Date()).diff(moment.utc(pr.created_at), 'days'))
-              switch (age) {
-                case 0:
-                  face = '<img src="baby.png" alt="" class="icon_small"/>';
+              var age = (moment(new Date()).diff(moment.utc(pr.created_at), 'hours'))
+              switch (true) {
+                case (age <= 20):
+                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f476.png" alt="" class="icon_small"/>';
                   break;
-                case 1:
-                  face = '<img src="boy.png" alt="" class="icon_small"/>';
+                case (age <= 34):
+                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f466.png" alt="" class="icon_small"/>';
                   break;
-                case 2:
-                  face = '<img src="man.png" alt="" class="icon_small"/>';
+                case (age <= 59):
+                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f468.png" alt="" class="icon_small"/>';
                   break;
-                case 3:
-                  face = '<img src="older_man.png" alt="" class="icon_small"/>';
+                default:
+                  face = '<img src="https://assets.github.corp.achievers.com/images/icons/emoji/unicode/1f474.png" alt="" class="icon_small"/>';
                   break;
               }
 
@@ -272,6 +308,5 @@ $(function() {
     var mon;
     return mon = new GithubMon(tab.url);
   }); //  var mon;
-  //  return mon = new GithubMon('https://github.corp.achievers.com/BE/PFA/pulls');
 
 });
