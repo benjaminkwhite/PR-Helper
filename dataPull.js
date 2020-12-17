@@ -104,9 +104,19 @@ Fetcher = (function() {
     this.accessToken = localStorage.getItem('accessToken');
     this.apihost = localStorage.getItem('githubApiHost') ? localStorage.getItem('githubApiHost') : 'https://api.github.com';
     this.repositories = JSON.parse(localStorage.getItem('repositories'));
+    
+    _(this.repositories).each((function(_this) {
+      
+    console.log(_this);
+      
+    }));
+
+
+
 
     dfds = [];
     _(this.repositories).each((function(_this) {
+      
       return function(repo) {
         return dfds.push($.ajax({
           type: 'get',
@@ -134,11 +144,12 @@ Fetcher = (function() {
           hiddenPRs = JSON.parse(hiddenPRs);
         };
 
-        totalPR = _(repos).reduce(function(prev, prs) {
           var filtered;
+        totalPR = _(repos).reduce(function(prev, prs) {
           filtered = _(prs).filter(function(pr) {
             return !_(hiddenPRs).contains(pr.id);
           });
+
 
           teamMates = localStorage.getItem('teamMates') || {};
           myId = localStorage.getItem('myId') || {};
@@ -158,14 +169,41 @@ Fetcher = (function() {
           return prev + filtered.length;
         }, 0);
 
-        if (totalPR > 0) {
+
+
+        var commentsRequests = JSON.parse(localStorage.getItem('comments'));
+
+          issue_url = _.pluck(filtered, 'issue_url');
+
+
+          filteredComments = _(commentsRequests).filter(function(pr) {
+            return _(issue_url).contains(pr.issue_url);
+          });
+
+        filterBody = function(array) {
+          return _.filter(array, function(pr) {
+            if (escape(pr.body).indexOf("%3Awhite_check_mark%3A") > -1 || escape(pr.body).indexOf("%3Afacepunch%3A") > -1 || escape(pr.body).indexOf("%u2705") > -1) {
+              return true;
+            }
+          });
+        }
+
+        var mySubArray = _.uniq(filterBody(filteredComments), function(value) {
+          return value.issue_url;
+        });
+
+
+
+
+
+        if ((totalPR-mySubArray.length) > 0) {
 
           color = '#3D7ADD';
-          if (totalPR > 7) {
+          if ((totalPR-mySubArray.length) > 7) {
             color = '#ff0000';
           }
 
-          badging(totalPR.toString(), color, 'PR Helper');
+          badging((totalPR-mySubArray.length).toString(), color, 'PR Helper');
 
           comments = _(repos).reduce(function(prev, prs) {
 
@@ -230,3 +268,32 @@ interval = 10000;
 setInterval(function() {
   return fetcher.fetch();
 }, interval);
+
+
+  // launch options page on first run
+  chrome.runtime.onInstalled.addListener(details => {
+    if (details.reason === 'install') {
+      chrome.runtime.openOptionsPage();
+    }
+  });
+
+
+
+var cakeNotification = "cake-notification"
+
+var CAKE_INTERVAL = .5;
+
+chrome.alarms.create("", {periodInMinutes: CAKE_INTERVAL});
+
+chrome.alarms.onAlarm.addListener(function(alarm) {
+  chrome.notifications.create(cakeNotification, {
+    "type": "basic",
+    "iconUrl": chrome.extension.getURL("icon-128.png"),
+    "title": "Time for cake!",
+    "message": "Something something cake"
+  });
+});
+
+chrome.browserAction.onClicked.addListener(function () {
+  chrome.notifications.clear(cakeNotification);
+});
